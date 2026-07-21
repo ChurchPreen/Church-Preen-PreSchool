@@ -1,0 +1,216 @@
+{
+  "meta": {
+    "last_updated": "2025-07-15",
+    "site_name": "Church Preen Pre-School"
+  },
+  "contact": {
+    "phone": "01694 771797",
+    "email": "maria@churchpreenpreschool.org.uk",
+    "admissions_email": "info@churchpreenpreschool.co.uk",
+    "emergency_phone": "01694 771359",
+    "address_line1": "Church Preen Village Hall",
+    "address_line2": "Church Preen",
+    "address_line3": "Church Stretton",
+    "address_line4": "Shropshire",
+    "postcode": "SY6 7LH",
+    "opening_days": "Monday to Wednesday",
+    "opening_hours": "9:00am \u2013 3:00pm",
+    "opening_note": "Term time only. Please leave a message if we're busy with the children.",
+    "facebook_url": "https://www.facebook.com/preenpreschool",
+    "instagram_url": "https://www.instagram.com/churchpreenpreschool",
+    "charity_number": "1033121",
+    "google_maps_url": "https://maps.google.com/?q=Church+Preen+Village+Hall+SY6+7LH"
+  },
+  "staff": [
+    {
+      "id": "maria",
+      "name": "Maria Reynolds",
+      "role": "Pre-School Manager & Play Leader",
+      "bio": "Maria leads with warmth and vision, bringing extensive experience in early years education, safeguarding, and curriculum planning. She is the first point of contact for new families.",
+      "qualifications": [
+        "Level 3 Qualified",
+        "Paediatric First Aid",
+        "Safeguarding Lead"
+      ],
+      "email": "maria@churchpreenpreschool.org.uk"
+    },
+    {
+      "id": "jemma",
+      "name": "Jemma Pugh",
+      "role": "Deputy Manager",
+      "bio": "Jemma brings enthusiasm, reliability, and a deeply caring approach to her role. She excels in supporting children's individual needs and planning engaging, play-based activities.",
+      "qualifications": [
+        "Level 3 Qualified",
+        "Paediatric First Aid",
+        "SEND Support"
+      ],
+      "email": ""
+    }
+  ],
+  "news": [
+    {
+      "id": "news-1",
+      "date": "June 2025",
+      "title": "Summer Term is in full swing!",
+      "body": "The children are loving outdoor learning this term \u2014 from bug hunts to water play, there's never a dull moment in Ape Dale!",
+      "icon": "\ud83c\udf38"
+    },
+    {
+      "id": "news-2",
+      "date": "April 2025",
+      "title": "Breakfast with the Easter Bunny \u2014 what a morning!",
+      "body": "Thank you to everyone who came along to our Easter fundraiser. We raised brilliant funds and had so much fun together.",
+      "icon": "\ud83d\udc30"
+    },
+    {
+      "id": "news-3",
+      "date": "June 2024",
+      "title": "We're rated Good by Ofsted!",
+      "body": "We're delighted to share our latest Ofsted inspection result \u2014 Good across all areas. A huge well done to our wonderful team!",
+      "icon": "\u2b50"
+    }
+  ],
+  "terms": [
+    {
+      "id": "autumn",
+      "season": "Autumn",
+      "emoji": "\ud83c\udf42",
+      "start": "3 September 2025",
+      "half_term": "27\u201331 October 2025",
+      "end": "19 December 2025"
+    },
+    {
+      "id": "spring",
+      "season": "Spring",
+      "emoji": "\u2744\ufe0f",
+      "start": "5 January 2026",
+      "half_term": "16\u201320 February 2026",
+      "end": "27 March 2026"
+    },
+    {
+      "id": "summer",
+      "season": "Summer",
+      "emoji": "\ud83c\udf1e",
+      "start": "20 April 2026",
+      "half_term": "25\u201329 May 2026",
+      "end": "22 July 2026"
+    }
+  ],
+  "events": [
+    {
+      "id": "event-1",
+      "name": "Breakfast with the Easter Bunny",
+      "emoji": "\ud83d\udc30",
+      "date_display": "TBC 2026",
+      "date_day": "TBC",
+      "date_month": "2026",
+      "description": "A firm annual favourite \u2014 watch our Facebook page for the confirmed date!"
+    },
+    {
+      "id": "event-2",
+      "name": "Coffee Morning",
+      "emoji": "\u2615",
+      "date_display": "TBC 2025",
+      "date_day": "TBC",
+      "date_month": "2025",
+      "description": "Cake, chat, and community. All families welcome!"
+    },
+    {
+      "id": "event-3",
+      "name": "Quiz Night",
+      "emoji": "\ud83e\udde0",
+      "date_display": "TBC 2025",
+      "date_day": "TBC",
+      "date_month": "2025",
+      "description": "Test your knowledge \u2014 all proceeds go directly to the pre-school."
+    }
+  ],
+  "gallery": [],
+  "ofsted": {
+    "overall": "Good",
+    "date": "4 June 2024",
+    "quality_of_education": "Good",
+    "behaviour_and_attitudes": "Good",
+    "personal_development": "Good",
+    "leadership_and_management": "Good",
+    "report_url": "#",
+    "previous_reports": [
+      {
+        "date": "October 2018",
+        "url": "#"
+      },
+      {
+        "date": "July 2015",
+        "url": "#"
+      },
+      {
+        "date": "July 2011",
+        "url": "#"
+      },
+      {
+        "date": "September 2007",
+        "url": "#"
+      }
+    ]
+  },
+  "admissions": {
+    "intro": "We accept applications year-round, with places allocated on a first-come, first-served basis. We'd love you to come and visit first.",
+    "funding_15hr": "All 3 & 4-year-olds",
+    "funding_30hr": "Working parents (eligible)",
+    "funding_2yr": "Some 2-year-olds may also qualify \u2014 please ask us",
+    "min_sessions": "4",
+    "faq": [
+      {
+        "q": "When can my child start?",
+        "a": "Children can join from age 2, starting at the beginning of the next term after they become eligible."
+      },
+      {
+        "q": "What funding is available?",
+        "a": "All 3 & 4-year-olds receive 15 free hours per week. Working parents who each earn at least the National Minimum Wage for 16 hours a week (and under \u00a3100,000/year) may qualify for 30 hours. Some 2-year-olds also qualify."
+      },
+      {
+        "q": "What sessions are available?",
+        "a": "We run Monday to Wednesday, 9am\u20133pm. Sessions can be morning, afternoon, or full-day. We recommend a minimum of 4 sessions per week to help children settle well."
+      },
+      {
+        "q": "Do you support children with SEN?",
+        "a": "Absolutely. We work closely with families and follow the SEN Code of Practice to ensure every child gets the support they need."
+      },
+      {
+        "q": "How long will my child attend?",
+        "a": "Until they transition to Reception class in the September after their 4th birthday. We work hard to make this transition as smooth and positive as possible."
+      }
+    ]
+  },
+  "testimonials": [],
+  "policies_eyfs": [
+    "Safeguarding and Child Protection",
+    "Complaints Procedure",
+    "Health and Safety",
+    "Administering Medicines",
+    "Food and Drink",
+    "Managing Behaviour",
+    "Suitable People (Recruitment & Vetting)",
+    "Staff Qualifications, Training, Support & Skills",
+    "Key Person",
+    "Staff:Child Ratios",
+    "Special Educational Needs & Disabilities (SEND)",
+    "Information & Records",
+    "Premises, Environment & Equipment"
+  ],
+  "policies_additional": [
+    "Admissions",
+    "Equality, Diversity & Inclusion",
+    "Parental Partnership",
+    "Observation, Assessment & Planning",
+    "Curriculum & Learning",
+    "Intimate Care (Nappy Changing/Toileting)",
+    "Attendance & Absence",
+    "Outings & Trips",
+    "Uncollected/Lost Child",
+    "Confidentiality",
+    "ICT, E-Safety & Social Media",
+    "Sun Protection & Outdoor Play",
+    "Fees & Funding"
+  ]
+}
