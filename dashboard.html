@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Dashboard – Church Preen Pre-School</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:#f0f4f8;color:#2c2c2c;min-height:100vh;}
+
+/* TOP BAR */
+.topbar{background:#2B8DD6;color:white;padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(43,141,214,.3);}
+.topbar-left{display:flex;align-items:center;gap:.75rem;}
+.topbar img{height:44px;}
+.topbar-title{font-family:'Baloo 2',sans-serif;font-size:1.1rem;font-weight:700;}
+.topbar-title span{font-size:.8rem;opacity:.8;display:block;font-family:'Nunito',sans-serif;font-weight:400;}
+.topbar-right{display:flex;align-items:center;gap:1rem;}
+.save-status{font-size:.85rem;opacity:.85;}
+.btn-logout{background:rgba(255,255,255,.2);border:none;color:white;padding:.4rem .9rem;border-radius:8px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;transition:background .2s;}
+.btn-logout:hover{background:rgba(255,255,255,.3);}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 62px);}
+
+/* SIDEBAR */
+.sidebar{background:white;border-right:1px solid #e2eaf5;padding:1.25rem 0;}
+.sidebar-section{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#aaa;padding:.75rem 1.25rem .35rem;}
+.nav-item{display:flex;align-items:center;gap:.65rem;padding:.65rem 1.25rem;cursor:pointer;color:#555;font-weight:600;font-size:.9rem;transition:all .2s;border-left:3px solid transparent;}
+.nav-item:hover{background:#f0f7ff;color:#2B8DD6;}
+.nav-item.active{background:#e8f4fd;color:#2B8DD6;border-left-color:#2B8DD6;}
+.nav-item .icon{font-size:1.1rem;width:24px;text-align:center;}
+
+/* MAIN CONTENT */
+.main{padding:2rem;overflow-y:auto;}
+.panel{display:none;}
+.panel.active{display:block;}
+.panel-header{margin-bottom:1.75rem;}
+.panel-header h2{font-family:'Baloo 2',sans-serif;font-size:1.6rem;color:#2B8DD6;margin-bottom:.25rem;}
+.panel-header p{color:#888;font-size:.9rem;}
+
+/* CARDS */
+.card{background:white;border-radius:14px;padding:1.5rem;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:1.25rem;border:1px solid #e8eef5;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.card-title{font-family:'Baloo 2',sans-serif;font-size:1.05rem;color:#2c2c2c;}
+.card-meta{font-size:.8rem;color:#aaa;}
+
+/* FORM ELEMENTS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr;}
+.form-group{margin-bottom:1rem;}
+.form-group.full{grid-column:1/-1;}
+label{display:block;font-size:.8rem;font-weight:700;color:#555;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.05em;}
+input[type=text],input[type=email],input[type=tel],input[type=url],input[type=date],textarea,select{
+  width:100%;padding:.65rem .9rem;border:2px solid #e2eaf5;border-radius:8px;
+  font-family:'Nunito',sans-serif;font-size:.95rem;outline:none;transition:border .2s;background:white;}
+input:focus,textarea:focus,select:focus{border-color:#2B8DD6;}
+textarea{resize:vertical;min-height:90px;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.25rem;border:none;border-radius:8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;}
+.btn-primary{background:#2B8DD6;color:white;}
+.btn-primary:hover{background:#1a6baa;}
+.btn-green{background:#3aad6e;color:white;}
+.btn-green:hover{background:#2d8a57;}
+.btn-red{background:#e8342a;color:white;}
+.btn-red:hover{background:#c0271e;}
+.btn-grey{background:#f0f4f8;color:#555;border:1px solid #e2eaf5;}
+.btn-grey:hover{background:#e2eaf5;}
+.btn-sm{padding:.4rem .8rem;font-size:.82rem;}
+
+/* NEWS ITEMS */
+.news-item{background:#f8faff;border:1px solid #e2eaf5;border-radius:10px;padding:1.1rem;margin-bottom:.75rem;display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:start;}
+.news-item-body .ni-title{font-weight:700;color:#2c2c2c;margin-bottom:.2rem;}
+.news-item-body .ni-date{font-size:.8rem;color:#aaa;}
+.news-item-body .ni-preview{font-size:.85rem;color:#666;margin-top:.3rem;}
+.news-item-actions{display:flex;gap:.4rem;flex-shrink:0;}
+
+/* EVENT ITEMS */
+.event-item{background:#f8faff;border:1px solid #e2eaf5;border-radius:10px;padding:1.1rem;margin-bottom:.75rem;display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center;}
+.event-date-badge{background:#2B8DD6;color:white;border-radius:8px;padding:.5rem .75rem;text-align:center;min-width:58px;}
+.event-date-badge .edb-day{font-family:'Baloo 2',sans-serif;font-size:1.3rem;line-height:1;}
+.event-date-badge .edb-mon{font-size:.65rem;font-weight:700;text-transform:uppercase;}
+
+/* TERM CARDS */
+.term-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.term-card{border-radius:12px;padding:1.25rem;border-left:5px solid #2B8DD6;}
+.term-card.autumn{background:#fff5f0;border-color:#e8342a;}
+.term-card.spring{background:#f0f8ff;border-color:#2B8DD6;}
+.term-card.summer{background:#fffde6;border-color:#f5c800;}
+.term-card h4{font-family:'Baloo 2',sans-serif;font-size:1rem;margin-bottom:.75rem;}
+
+/* GALLERY */
+.gallery-upload{border:2px dashed #b3d4f0;border-radius:12px;padding:2.5rem;text-align:center;background:#f8fbff;cursor:pointer;transition:all .2s;}
+.gallery-upload:hover{border-color:#2B8DD6;background:#e8f4fd;}
+.gallery-upload .upload-icon{font-size:2.5rem;margin-bottom:.5rem;}
+.gallery-upload p{color:#888;font-size:.9rem;}
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:1.25rem;}
+.gal-item{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;}
+.gal-item img{width:100%;height:100%;object-fit:cover;}
+.gal-item-del{position:absolute;top:.35rem;right:.35rem;background:rgba(232,52,42,.9);color:white;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;font-weight:700;}
+
+/* STAFF */
+.staff-card{background:#f8faff;border:1px solid #e2eaf5;border-radius:12px;padding:1.25rem;margin-bottom:.75rem;}
+.staff-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.staff-name{font-family:'Baloo 2',sans-serif;font-size:1.05rem;color:#2B8DD6;}
+.staff-role{font-size:.82rem;color:#888;}
+
+/* TOAST NOTIFICATION */
+.toast{position:fixed;bottom:2rem;right:2rem;background:#1a1a2e;color:white;padding:.9rem 1.5rem;border-radius:12px;font-weight:700;font-size:.9rem;transform:translateY(100px);opacity:0;transition:all .3s;z-index:999;display:flex;align-items:center;gap:.5rem;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{background:#2d8a57;}
+.toast.error{background:#c0271e;}
+
+/* MODAL */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;}
+.modal-backdrop.show{display:flex;}
+.modal{background:white;border-radius:16px;padding:2rem;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.modal-header h3{font-family:'Baloo 2',sans-serif;color:#2B8DD6;font-size:1.2rem;}
+.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;line-height:1;}
+.modal-footer{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e2eaf5;}
+
+/* SETTINGS */
+.settings-section{margin-bottom:2rem;}
+.settings-section h3{font-family:'Baloo 2',sans-serif;font-size:1.05rem;color:#2c2c2c;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:2px solid #e2eaf5;}
+
+/* DASHBOARD OVERVIEW */
+.overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.ov-card{background:white;border-radius:14px;padding:1.25rem;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid #e8eef5;text-align:center;}
+.ov-card .ov-num{font-family:'Baloo 2',sans-serif;font-size:2rem;color:#2B8DD6;line-height:1;}
+.ov-card .ov-label{font-size:.8rem;color:#aaa;margin-top:.25rem;}
+.view-site-btn{display:inline-flex;align-items:center;gap:.5rem;background:#f5c800;color:#5a4000;padding:.65rem 1.4rem;border-radius:8px;font-weight:700;text-decoration:none;font-size:.9rem;transition:background .2s;}
+.view-site-btn:hover{background:#d4a800;}
+
+/* POLICY LIST */
+.policy-tag{display:inline-flex;align-items:center;gap:.4rem;background:#e8f4fd;color:#1a6baa;border-radius:20px;padding:.3rem .75rem;font-size:.82rem;font-weight:700;margin:.2rem;}
+.policy-tag button{background:none;border:none;cursor:pointer;color:#e8342a;font-size:.9rem;line-height:1;padding:0 0 0 .2rem;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .form-grid,.term-grid,.overview-grid{grid-template-columns:1fr;}
+  .gallery-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <img src="../logo_master_transparent.png" alt="Church Preen Pre-School">
+    <div class="topbar-title">
+      Website Admin
+      <span>Church Preen Pre-School</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="save-status" id="saveStatus"></span>
+    <a href="../index.html" target="_blank" class="view-site-btn">👁 View Website</a>
+    <button class="btn-logout" onclick="logout()">Log Out</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">Overview</div>
+    <div class="nav-item active" onclick="showPanel('dashboard')"><span class="icon">🏠</span> Dashboard</div>
+    <div class="sidebar-section">Content</div>
+    <div class="nav-item" onclick="showPanel('news')"><span class="icon">📰</span> News</div>
+    <div class="nav-item" onclick="showPanel('events')"><span class="icon">🎉</span> Events</div>
+    <div class="nav-item" onclick="showPanel('terms')"><span class="icon">📅</span> Term Dates</div>
+    <div class="nav-item" onclick="showPanel('gallery')"><span class="icon">📸</span> Gallery</div>
+    <div class="sidebar-section">School Info</div>
+    <div class="nav-item" onclick="showPanel('contact')"><span class="icon">📞</span> Contact Info</div>
+    <div class="nav-item" onclick="showPanel('staff')"><span class="icon">👩‍🏫</span> Staff</div>
+    <div class="nav-item" onclick="showPanel('admissions')"><span class="icon">📋</span> Admissions</div>
+    <div class="nav-item" onclick="showPanel('ofsted')"><span class="icon">⭐</span> Ofsted</div>
+    <div class="nav-item" onclick="showPanel('policies')"><span class="icon">📄</span> Policies</div>
+    <div class="sidebar-section">Settings</div>
+    <div class="nav-item" onclick="showPanel('settings')"><span class="icon">⚙️</span> Settings</div>
+    <div class="nav-item" onclick="showPanel('help')"><span class="icon">❓</span> Help</div>
+  </div>
+
+  <!-- MAIN PANELS -->
+  <div class="main">
+
+    <!-- DASHBOARD PANEL -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="panel-header">
+        <h2>👋 Welcome back!</h2>
+        <p>Here's a quick overview of your website content.</p>
+      </div>
+      <div class="overview-grid">
+        <div class="ov-card"><div class="ov-num" id="ov-news">0</div><div class="ov-label">News Posts</div></div>
+        <div class="ov-card"><div class="ov-num" id="ov-events">0</div><div class="ov-label">Events</div></div>
+        <div class="ov-card"><div class="ov-num" id="ov-gallery">0</div><div class="ov-label">Gallery Photos</div></div>
+        <div class="ov-card"><div class="ov-num" id="ov-staff">0</div><div class="ov-label">Staff Members</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">⚡ Quick Actions</div></div>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="showPanel('news');setTimeout(()=>openNewsModal(),100)">➕ Add News Post</button>
+          <button class="btn btn-green" onclick="showPanel('events');setTimeout(()=>openEventModal(),100)">➕ Add Event</button>
+          <button class="btn btn-grey" onclick="showPanel('gallery')">📸 Update Gallery</button>
+          <button class="btn btn-grey" onclick="showPanel('terms')">📅 Update Term Dates</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">💾 How saving works</div></div>
+        <p style="font-size:.9rem;color:#666;line-height:1.7;">When you make changes and click <strong>Save</strong>, they are sent directly to GitHub and your website updates within seconds. You need your GitHub token entered at login for this to work. Changes are permanent — but you can always edit them again.</p>
+      </div>
+    </div>
+
+    <!-- NEWS PANEL -->
+    <div class="panel" id="panel-news">
+      <div class="panel-header">
+        <h2>📰 News Posts</h2>
+        <p>Add, edit or remove news updates shown on the website.</p>
+      </div>
+      <div style="margin-bottom:1.25rem;">
+        <button class="btn btn-primary" onclick="openNewsModal()">➕ Add News Post</button>
+      </div>
+      <div id="news-list"></div>
+    </div>
+
+    <!-- EVENTS PANEL -->
+    <div class="panel" id="panel-events">
+      <div class="panel-header">
+        <h2>🎉 Events</h2>
+        <p>Manage upcoming fundraising events and community activities.</p>
+      </div>
+      <div style="margin-bottom:1.25rem;">
+        <button class="btn btn-primary" onclick="openEventModal()">➕ Add Event</button>
+      </div>
+      <div id="events-list"></div>
+    </div>
+
+    <!-- TERM DATES PANEL -->
+    <div class="panel" id="panel-terms">
+      <div class="panel-header">
+        <h2>📅 Term Dates</h2>
+        <p>Update the term dates shown on the website. Click Save when done.</p>
+      </div>
+      <div class="term-grid" id="terms-grid"></div>
+      <div style="margin-top:1.5rem;">
+        <button class="btn btn-primary" onclick="saveTerms()">💾 Save Term Dates</button>
+      </div>
+    </div>
+
+    <!-- GALLERY PANEL -->
+    <div class="panel" id="panel-gallery">
+      <div class="panel-header">
+        <h2>📸 Gallery</h2>
+        <p>Upload photos to the gallery. Images are stored in your GitHub repository.</p>
+      </div>
+      <div class="card">
+        <div class="gallery-upload" onclick="document.getElementById('gallery-upload-input').click()">
+          <div class="upload-icon">📷</div>
+          <p><strong>Click to upload photos</strong></p>
+          <p>JPG or PNG, max 5MB each</p>
+          <input type="file" id="gallery-upload-input" accept="image/jpeg,image/png" multiple style="display:none" onchange="handleGalleryUpload(this)">
+        </div>
+        <div class="gallery-grid" id="gallery-grid"></div>
+      </div>
+    </div>
+
+    <!-- CONTACT PANEL -->
+    <div class="panel" id="panel-contact">
+      <div class="panel-header">
+        <h2>📞 Contact Information</h2>
+        <p>Update the contact details shown on the website.</p>
+      </div>
+      <div class="card">
+        <div class="settings-section">
+          <h3>📞 Phone & Email</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Main Phone Number</label><input type="tel" id="c-phone"></div>
+            <div class="form-group"><label>Main Email</label><input type="email" id="c-email"></div>
+            <div class="form-group"><label>Admissions Email</label><input type="email" id="c-admissions-email"></div>
+            <div class="form-group"><label>Emergency Phone</label><input type="tel" id="c-emergency"></div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>📍 Address</h3>
+          <div class="form-grid">
+            <div class="form-group full"><label>Address Line 1</label><input type="text" id="c-addr1"></div>
+            <div class="form-group full"><label>Address Line 2</label><input type="text" id="c-addr2"></div>
+            <div class="form-group"><label>Town / City</label><input type="text" id="c-addr3"></div>
+            <div class="form-group"><label>County</label><input type="text" id="c-addr4"></div>
+            <div class="form-group"><label>Postcode</label><input type="text" id="c-postcode"></div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>🕐 Opening Hours</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Opening Days</label><input type="text" id="c-days" placeholder="Monday to Wednesday"></div>
+            <div class="form-group"><label>Opening Hours</label><input type="text" id="c-hours" placeholder="9:00am – 3:00pm"></div>
+            <div class="form-group full"><label>Additional Note</label><input type="text" id="c-note"></div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>📱 Social Media</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Facebook URL</label><input type="url" id="c-facebook"></div>
+            <div class="form-group"><label>Instagram URL</label><input type="url" id="c-instagram"></div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveContact()">💾 Save Contact Info</button>
+      </div>
+    </div>
+
+    <!-- STAFF PANEL -->
+    <div class="panel" id="panel-staff">
+      <div class="panel-header">
+        <h2>👩‍🏫 Staff</h2>
+        <p>Update staff names, roles and biographies.</p>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <button class="btn btn-primary" onclick="openStaffModal()">➕ Add Staff Member</button>
+      </div>
+      <div id="staff-list"></div>
+    </div>
+
+    <!-- ADMISSIONS PANEL -->
+    <div class="panel" id="panel-admissions">
+      <div class="panel-header">
+        <h2>📋 Admissions</h2>
+        <p>Update the admissions information and FAQ answers.</p>
+      </div>
+      <div class="card">
+        <div class="settings-section">
+          <h3>Introduction Text</h3>
+          <div class="form-group"><label>Intro paragraph</label><textarea id="adm-intro" rows="3"></textarea></div>
+        </div>
+        <div class="settings-section">
+          <h3>Funding Info</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>15 hour eligibility</label><input type="text" id="adm-15hr"></div>
+            <div class="form-group"><label>30 hour eligibility</label><input type="text" id="adm-30hr"></div>
+            <div class="form-group full"><label>2-year-old funding note</label><input type="text" id="adm-2yr"></div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>FAQ — Click any answer to edit</h3>
+          <div id="faq-list"></div>
+          <button class="btn btn-grey btn-sm" onclick="addFaq()" style="margin-top:.75rem;">➕ Add Question</button>
+        </div>
+        <button class="btn btn-primary" onclick="saveAdmissions()">💾 Save Admissions Info</button>
+      </div>
+    </div>
+
+    <!-- OFSTED PANEL -->
+    <div class="panel" id="panel-ofsted">
+      <div class="panel-header">
+        <h2>⭐ Ofsted</h2>
+        <p>Update Ofsted inspection results and report links.</p>
+      </div>
+      <div class="card">
+        <div class="form-grid">
+          <div class="form-group"><label>Overall Grade</label>
+            <select id="of-overall"><option>Outstanding</option><option>Good</option><option>Requires Improvement</option><option>Inadequate</option></select>
+          </div>
+          <div class="form-group"><label>Inspection Date</label><input type="text" id="of-date" placeholder="e.g. 4 June 2024"></div>
+          <div class="form-group"><label>Quality of Education</label>
+            <select id="of-qe"><option>Outstanding</option><option>Good</option><option>Requires Improvement</option><option>Inadequate</option></select>
+          </div>
+          <div class="form-group"><label>Behaviour & Attitudes</label>
+            <select id="of-ba"><option>Outstanding</option><option>Good</option><option>Requires Improvement</option><option>Inadequate</option></select>
+          </div>
+          <div class="form-group"><label>Personal Development</label>
+            <select id="of-pd"><option>Outstanding</option><option>Good</option><option>Requires Improvement</option><option>Inadequate</option></select>
+          </div>
+          <div class="form-group"><label>Leadership & Management</label>
+            <select id="of-lm"><option>Outstanding</option><option>Good</option><option>Requires Improvement</option><option>Inadequate</option></select>
+          </div>
+          <div class="form-group full"><label>Latest Report Download URL</label><input type="url" id="of-url" placeholder="https://..."></div>
+        </div>
+        <h4 style="margin:.75rem 0 .5rem;font-size:.9rem;color:#555;">Previous Reports</h4>
+        <div id="prev-reports-list"></div>
+        <button class="btn btn-grey btn-sm" onclick="addPrevReport()" style="margin-top:.5rem;">➕ Add Previous Report</button>
+        <div style="margin-top:1.25rem;">
+          <button class="btn btn-primary" onclick="saveOfsted()">💾 Save Ofsted Info</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- POLICIES PANEL -->
+    <div class="panel" id="panel-policies">
+      <div class="panel-header">
+        <h2>📄 Policies</h2>
+        <p>Manage the list of policies shown on the website.</p>
+      </div>
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-header"><div class="card-title">Required EYFS Policies</div></div>
+        <div id="eyfs-policies"></div>
+        <div style="display:flex;gap:.5rem;margin-top:.75rem;">
+          <input type="text" id="new-eyfs-policy" placeholder="Policy name..." style="flex:1;">
+          <button class="btn btn-primary btn-sm" onclick="addPolicy('eyfs')">Add</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Additional Policies</div></div>
+        <div id="additional-policies"></div>
+        <div style="display:flex;gap:.5rem;margin-top:.75rem;">
+          <input type="text" id="new-additional-policy" placeholder="Policy name..." style="flex:1;">
+          <button class="btn btn-primary btn-sm" onclick="addPolicy('additional')">Add</button>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="savePolicies()" style="margin-top:1rem;">💾 Save Policies</button>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div class="panel" id="panel-settings">
+      <div class="panel-header">
+        <h2>⚙️ Settings</h2>
+        <p>Configure your GitHub connection and site settings.</p>
+      </div>
+      <div class="card">
+        <div class="settings-section">
+          <h3>🔗 GitHub Connection</h3>
+          <p style="font-size:.88rem;color:#666;margin-bottom:1rem;line-height:1.7;">Your website files are stored in a GitHub repository. Enter your repository details below so the admin panel can save changes to your live site.</p>
+          <div class="form-grid">
+            <div class="form-group"><label>GitHub Username</label><input type="text" id="gh-user" placeholder="e.g. churchpreen"></div>
+            <div class="form-group"><label>Repository Name</label><input type="text" id="gh-repo" placeholder="e.g. preschool-website"></div>
+            <div class="form-group"><label>Branch</label><input type="text" id="gh-branch" placeholder="main" value="main"></div>
+          </div>
+          <button class="btn btn-primary" onclick="saveGitHubSettings()">💾 Save GitHub Settings</button>
+        </div>
+        <div class="settings-section">
+          <h3>🔑 Change Admin Password</h3>
+          <p style="font-size:.88rem;color:#666;margin-bottom:1rem;">Change the password used to log into this admin panel.</p>
+          <div class="form-grid">
+            <div class="form-group"><label>New Password</label><input type="password" id="new-pw"></div>
+            <div class="form-group"><label>Confirm Password</label><input type="password" id="confirm-pw"></div>
+          </div>
+          <p style="font-size:.82rem;color:#e8342a;margin-bottom:.75rem;">⚠️ After changing, you will need to update the password in the login page HTML file and re-upload it.</p>
+          <button class="btn btn-grey" onclick="changePassword()">Change Password</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HELP PANEL -->
+    <div class="panel" id="panel-help">
+      <div class="panel-header">
+        <h2>❓ Help & Handover Guide</h2>
+        <p>Everything the next website manager needs to know.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:#2B8DD6;font-family:'Baloo 2',sans-serif;margin-bottom:1rem;">🚀 Getting Started</h3>
+        <ol style="padding-left:1.2rem;font-size:.92rem;color:#555;line-height:2;">
+          <li>Go to <strong>github.com</strong> and log into the pre-school account</li>
+          <li>Go to <strong>Settings → Developer settings → Personal access tokens</strong></li>
+          <li>Create a new token with <strong>repo</strong> permission — copy it</li>
+          <li>Come to this admin page, enter the password and paste the token</li>
+          <li>You are now able to save changes to the live website!</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3 style="color:#2B8DD6;font-family:'Baloo 2',sans-serif;margin-bottom:1rem;">📰 Adding a News Post</h3>
+        <p style="font-size:.92rem;color:#555;line-height:1.8;">Go to <strong>News</strong> in the sidebar → click <strong>Add News Post</strong> → fill in the title, date, and a short description → click <strong>Save Post</strong>. It will appear on the website within seconds.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:#2B8DD6;font-family:'Baloo 2',sans-serif;margin-bottom:1rem;">📅 Updating Term Dates</h3>
+        <p style="font-size:.92rem;color:#555;line-height:1.8;">Go to <strong>Term Dates</strong> → update the start, half term, and end dates for each term → click <strong>Save Term Dates</strong>.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:#2B8DD6;font-family:'Baloo 2',sans-serif;margin-bottom:1rem;">📸 Adding Gallery Photos</h3>
+        <p style="font-size:.92rem;color:#555;line-height:1.8;">Go to <strong>Gallery</strong> → click the upload area → select photos from your device. They will upload to the website automatically. To remove a photo, click the red ✕ on it.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:#2B8DD6;font-family:'Baloo 2',sans-serif;margin-bottom:1rem;">🆘 Something went wrong?</h3>
+        <p style="font-size:.92rem;color:#555;line-height:1.8;">If a save fails, check:<br>
+        1. Your GitHub token is still valid (tokens expire — create a new one if needed)<br>
+        2. The GitHub username and repository name in Settings are correct<br>
+        3. You have internet access<br><br>
+        Nothing you do in the admin panel can break the website permanently — every save is tracked by GitHub and can be undone.</p>
+      </div>
+      <div class="card" style="background:#fffbe6;border-color:#f5c800;">
+        <h3 style="color:#7a5f00;font-family:'Baloo 2',sans-serif;margin-bottom:.5rem;">📬 Website built by</h3>
+        <p style="font-size:.88rem;color:#7a5f00;line-height:1.7;">This website was built with the help of Claude AI (claude.ai). If you need to make bigger changes to the design or add new features, you can continue the conversation there — all the files and history are available.</p>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- NEWS MODAL -->
+<div class="modal-backdrop" id="news-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="news-modal-title">Add News Post</h3>
+      <button class="modal-close" onclick="closeModal('news-modal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Icon / Emoji</label>
+      <input type="text" id="nm-icon" placeholder="🌸" maxlength="2" style="width:80px;">
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Date (display)</label><input type="text" id="nm-date" placeholder="e.g. June 2025"></div>
+    </div>
+    <div class="form-group"><label>Title</label><input type="text" id="nm-title" placeholder="News post title"></div>
+    <div class="form-group"><label>Body</label><textarea id="nm-body" rows="4" placeholder="Write the news post here..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-grey" onclick="closeModal('news-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewsPost()">💾 Save Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="modal-backdrop" id="event-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="event-modal-title">Add Event</h3>
+      <button class="modal-close" onclick="closeModal('event-modal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Icon / Emoji</label><input type="text" id="em-icon" placeholder="🎉" maxlength="2" style="width:80px;"></div>
+    </div>
+    <div class="form-group"><label>Event Name</label><input type="text" id="em-name" placeholder="e.g. Easter Bunny Breakfast"></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Day (or TBC)</label><input type="text" id="em-day" placeholder="TBC or 14"></div>
+      <div class="form-group"><label>Month / Year</label><input type="text" id="em-month" placeholder="e.g. April 2026"></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea id="em-desc" rows="3" placeholder="Short description..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-grey" onclick="closeModal('event-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEvent()">💾 Save Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- STAFF MODAL -->
+<div class="modal-backdrop" id="staff-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="staff-modal-title">Add Staff Member</h3>
+      <button class="modal-close" onclick="closeModal('staff-modal')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Full Name</label><input type="text" id="sm-name"></div>
+      <div class="form-group"><label>Role / Job Title</label><input type="text" id="sm-role"></div>
+      <div class="form-group"><label>Email (optional)</label><input type="email" id="sm-email"></div>
+    </div>
+    <div class="form-group"><label>Biography</label><textarea id="sm-bio" rows="4"></textarea></div>
+    <div class="form-group"><label>Qualifications (one per line)</label><textarea id="sm-quals" rows="3" placeholder="Level 3 Qualified&#10;Paediatric First Aid"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-grey" onclick="closeModal('staff-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStaff()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let content = null;
+let editingId = null;
+
+// GitHub settings (loaded from localStorage)
+let GH = {
+  user: localStorage.getItem('cp_gh_user') || '',
+  repo: localStorage.getItem('cp_gh_repo') || '',
+  branch: localStorage.getItem('cp_gh_branch') || 'main',
+  token: sessionStorage.getItem('cp_token') || ''
+};
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  // Auth check
+  if (!sessionStorage.getItem('cp_admin')) {
+    window.location.href = 'index.html';
+    return;
+  }
+  // Load settings fields
+  document.getElementById('gh-user').value = GH.user;
+  document.getElementById('gh-repo').value = GH.repo;
+  document.getElementById('gh-branch').value = GH.branch;
+  // Load content
+  await loadContent();
+});
+
+// ── GITHUB API ─────────────────────────────────────────────────────────────
+async function ghGet(path) {
+  const url = `https://api.github.com/repos/${GH.user}/${GH.repo}/contents/${path}?ref=${GH.branch}`;
+  const r = await fetch(url, { headers: { Authorization: `token ${GH.token}`, Accept: 'application/vnd.github.v3+json' }});
+  if (!r.ok) throw new Error(`GitHub GET failed: ${r.status}`);
+  return r.json();
+}
+
+async function ghPut(path, contentB64, message, sha) {
+  const url = `https://api.github.com/repos/${GH.user}/${GH.repo}/contents/${path}`;
+  const body = { message, content: contentB64, branch: GH.branch };
+  if (sha) body.sha = sha;
+  const r = await fetch(url, {
+    method: 'PUT',
+    headers: { Authorization: `token ${GH.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.message || 'GitHub PUT failed'); }
+  return r.json();
+}
+
+async function saveToGitHub(jsonData) {
+  if (!GH.user || !GH.repo) {
+    toast('⚙️ Please set your GitHub username and repository name in Settings first.', 'error');
+    return false;
+  }
+  setStatus('Saving...');
+  try {
+    let sha = null;
+    try { const existing = await ghGet('data/content.json'); sha = existing.sha; } catch(e) {}
+    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(jsonData, null, 2))));
+    await ghPut('data/content.json', b64, 'Update website content via admin panel', sha);
+    setStatus('✅ Saved ' + new Date().toLocaleTimeString());
+    toast('✅ Saved! Your website has been updated.', 'success');
+    return true;
+  } catch(e) {
+    setStatus('');
+    toast('❌ Save failed: ' + e.message, 'error');
+    return false;
+  }
+}
+
+async function loadContent() {
+  try {
+    if (GH.user && GH.repo) {
+      const file = await ghGet('data/content.json');
+      content = JSON.parse(atob(file.content.replace(/\n/g,'')));
+    } else {
+      // Load local fallback
+      const r = await fetch('../data/content.json');
+      content = await r.json();
+    }
+  } catch(e) {
+    // Use embedded default
+    content = getDefaultContent();
+  }
+  renderAll();
+}
+
+// ── RENDER ALL ─────────────────────────────────────────────────────────────
+function renderAll() {
+  renderOverview();
+  renderNews();
+  renderEvents();
+  renderTerms();
+  renderGallery();
+  renderContact();
+  renderStaff();
+  renderAdmissions();
+  renderOfsted();
+  renderPolicies();
+}
+
+function renderOverview() {
+  document.getElementById('ov-news').textContent = content.news?.length || 0;
+  document.getElementById('ov-events').textContent = content.events?.length || 0;
+  document.getElementById('ov-gallery').textContent = content.gallery?.length || 0;
+  document.getElementById('ov-staff').textContent = content.staff?.length || 0;
+}
+
+// ── NEWS ───────────────────────────────────────────────────────────────────
+function renderNews() {
+  const list = document.getElementById('news-list');
+  if (!content.news?.length) { list.innerHTML = '<p style="color:#aaa;font-size:.9rem;">No news posts yet. Click Add News Post to create one.</p>'; return; }
+  list.innerHTML = content.news.map(n => `
+    <div class="news-item">
+      <div class="news-item-body">
+        <div class="ni-title">${n.icon || '📰'} ${escHtml(n.title)}</div>
+        <div class="ni-date">${escHtml(n.date)}</div>
+        <div class="ni-preview">${escHtml(n.body?.substring(0,100))}...</div>
+      </div>
+      <div class="news-item-actions">
+        <button class="btn btn-grey btn-sm" onclick="editNews('${n.id}')">✏️ Edit</button>
+        <button class="btn btn-red btn-sm" onclick="deleteNews('${n.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function openNewsModal(id) {
+  editingId = id || null;
+  const n = id ? content.news.find(x=>x.id===id) : null;
+  document.getElementById('news-modal-title').textContent = id ? 'Edit News Post' : 'Add News Post';
+  document.getElementById('nm-icon').value = n?.icon || '📰';
+  document.getElementById('nm-date').value = n?.date || '';
+  document.getElementById('nm-title').value = n?.title || '';
+  document.getElementById('nm-body').value = n?.body || '';
+  document.getElementById('news-modal').classList.add('show');
+}
+function editNews(id) { openNewsModal(id); }
+
+async function saveNewsPost() {
+  const post = {
+    id: editingId || 'news-' + Date.now(),
+    icon: document.getElementById('nm-icon').value || '📰',
+    date: document.getElementById('nm-date').value,
+    title: document.getElementById('nm-title').value,
+    body: document.getElementById('nm-body').value
+  };
+  if (!post.title) { toast('Please enter a title', 'error'); return; }
+  if (editingId) { const i = content.news.findIndex(x=>x.id===editingId); content.news[i] = post; }
+  else { content.news.unshift(post); }
+  closeModal('news-modal');
+  renderNews(); renderOverview();
+  await saveToGitHub(content);
+}
+
+async function deleteNews(id) {
+  if (!confirm('Delete this news post?')) return;
+  content.news = content.news.filter(x=>x.id!==id);
+  renderNews(); renderOverview();
+  await saveToGitHub(content);
+}
+
+// ── EVENTS ─────────────────────────────────────────────────────────────────
+function renderEvents() {
+  const list = document.getElementById('events-list');
+  if (!content.events?.length) { list.innerHTML = '<p style="color:#aaa;font-size:.9rem;">No events yet.</p>'; return; }
+  list.innerHTML = content.events.map(e => `
+    <div class="event-item">
+      <div class="event-date-badge"><div class="edb-day">${escHtml(e.date_day)}</div><div class="edb-mon">${escHtml(e.date_month)}</div></div>
+      <div><div style="font-weight:700;">${e.emoji||'🎉'} ${escHtml(e.name)}</div><div style="font-size:.85rem;color:#888;margin-top:.2rem;">${escHtml(e.description)}</div></div>
+      <div style="display:flex;gap:.4rem;">
+        <button class="btn btn-grey btn-sm" onclick="editEvent('${e.id}')">✏️</button>
+        <button class="btn btn-red btn-sm" onclick="deleteEvent('${e.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function openEventModal(id) {
+  editingId = id || null;
+  const e = id ? content.events.find(x=>x.id===id) : null;
+  document.getElementById('event-modal-title').textContent = id ? 'Edit Event' : 'Add Event';
+  document.getElementById('em-icon').value = e?.emoji || '🎉';
+  document.getElementById('em-name').value = e?.name || '';
+  document.getElementById('em-day').value = e?.date_day || 'TBC';
+  document.getElementById('em-month').value = e?.date_month || '';
+  document.getElementById('em-desc').value = e?.description || '';
+  document.getElementById('event-modal').classList.add('show');
+}
+function editEvent(id) { openEventModal(id); }
+
+async function saveEvent() {
+  const ev = {
+    id: editingId || 'event-' + Date.now(),
+    emoji: document.getElementById('em-icon').value || '🎉',
+    name: document.getElementById('em-name').value,
+    date_day: document.getElementById('em-day').value,
+    date_month: document.getElementById('em-month').value,
+    description: document.getElementById('em-desc').value
+  };
+  if (!ev.name) { toast('Please enter an event name', 'error'); return; }
+  if (editingId) { const i = content.events.findIndex(x=>x.id===editingId); content.events[i] = ev; }
+  else { content.events.push(ev); }
+  closeModal('event-modal');
+  renderEvents(); renderOverview();
+  await saveToGitHub(content);
+}
+
+async function deleteEvent(id) {
+  if (!confirm('Delete this event?')) return;
+  content.events = content.events.filter(x=>x.id!==id);
+  renderEvents(); renderOverview();
+  await saveToGitHub(content);
+}
+
+// ── TERMS ──────────────────────────────────────────────────────────────────
+function renderTerms() {
+  const colours = { autumn:'autumn', spring:'spring', summer:'summer' };
+  document.getElementById('terms-grid').innerHTML = (content.terms||[]).map(t => `
+    <div class="term-card ${colours[t.id]||''}">
+      <h4>${t.emoji||''} ${t.season} Term</h4>
+      <div class="form-group"><label>Start Date</label><input type="text" id="t-${t.id}-start" value="${escHtml(t.start)}"></div>
+      <div class="form-group"><label>Half Term</label><input type="text" id="t-${t.id}-half" value="${escHtml(t.half_term)}"></div>
+      <div class="form-group"><label>End Date</label><input type="text" id="t-${t.id}-end" value="${escHtml(t.end)}"></div>
+    </div>`).join('');
+}
+
+async function saveTerms() {
+  content.terms.forEach(t => {
+    t.start = document.getElementById(`t-${t.id}-start`)?.value || t.start;
+    t.half_term = document.getElementById(`t-${t.id}-half`)?.value || t.half_term;
+    t.end = document.getElementById(`t-${t.id}-end`)?.value || t.end;
+  });
+  await saveToGitHub(content);
+}
+
+// ── GALLERY ────────────────────────────────────────────────────────────────
+function renderGallery() {
+  const grid = document.getElementById('gallery-grid');
+  if (!content.gallery?.length) { grid.innerHTML = '<p style="color:#aaa;font-size:.85rem;margin-top:.75rem;">No photos yet. Upload some above!</p>'; return; }
+  grid.innerHTML = content.gallery.map((g,i) => `
+    <div class="gal-item">
+      <img src="${g.url}" alt="Gallery photo ${i+1}" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'><rect fill=\'%23e2eaf5\' width=\'100\' height=\'100\'></rect></svg>'">
+      <button class="gal-item-del" onclick="deleteGalleryPhoto('${g.id}')">✕</button>
+    </div>`).join('');
+}
+
+async function handleGalleryUpload(input) {
+  const files = Array.from(input.files);
+  for (const file of files) {
+    if (file.size > 5*1024*1024) { toast(`${file.name} is too large (max 5MB)`, 'error'); continue; }
+    toast(`Uploading ${file.name}...`);
+    try {
+      const b64 = await fileToBase64(file);
+      const id = 'gallery-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
+      const path = `data/gallery/${id}.jpg`;
+      await ghPut(path, b64.split(',')[1], `Add gallery photo: ${file.name}`, null);
+      const url = `https://raw.githubusercontent.com/${GH.user}/${GH.repo}/${GH.branch}/${path}`;
+      content.gallery.push({ id, url, filename: file.name });
+      await saveToGitHub(content);
+      renderGallery(); renderOverview();
+    } catch(e) { toast('Upload failed: ' + e.message, 'error'); }
+  }
+  input.value = '';
+}
+
+function fileToBase64(file) {
+  return new Promise((res,rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function deleteGalleryPhoto(id) {
+  if (!confirm('Remove this photo from the website?')) return;
+  content.gallery = content.gallery.filter(g=>g.id!==id);
+  renderGallery(); renderOverview();
+  await saveToGitHub(content);
+}
+
+// ── CONTACT ────────────────────────────────────────────────────────────────
+function renderContact() {
+  const c = content.contact || {};
+  const fields = { 'c-phone':'phone','c-email':'email','c-admissions-email':'admissions_email',
+    'c-emergency':'emergency_phone','c-addr1':'address_line1','c-addr2':'address_line2',
+    'c-addr3':'address_line3','c-addr4':'address_line4','c-postcode':'postcode',
+    'c-days':'opening_days','c-hours':'opening_hours','c-note':'opening_note',
+    'c-facebook':'facebook_url','c-instagram':'instagram_url' };
+  Object.entries(fields).forEach(([id,key]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = c[key] || '';
+  });
+}
+
+async function saveContact() {
+  const fields = { 'c-phone':'phone','c-email':'email','c-admissions-email':'admissions_email',
+    'c-emergency':'emergency_phone','c-addr1':'address_line1','c-addr2':'address_line2',
+    'c-addr3':'address_line3','c-addr4':'address_line4','c-postcode':'postcode',
+    'c-days':'opening_days','c-hours':'opening_hours','c-note':'opening_note',
+    'c-facebook':'facebook_url','c-instagram':'instagram_url' };
+  Object.entries(fields).forEach(([id,key]) => {
+    const el = document.getElementById(id);
+    if (el) content.contact[key] = el.value;
+  });
+  await saveToGitHub(content);
+}
+
+// ── STAFF ──────────────────────────────────────────────────────────────────
+function renderStaff() {
+  const list = document.getElementById('staff-list');
+  list.innerHTML = (content.staff||[]).map(s => `
+    <div class="staff-card">
+      <div class="staff-card-header">
+        <div><div class="staff-name">${escHtml(s.name)}</div><div class="staff-role">${escHtml(s.role)}</div></div>
+        <div style="display:flex;gap:.4rem;">
+          <button class="btn btn-grey btn-sm" onclick="editStaff('${s.id}')">✏️ Edit</button>
+          <button class="btn btn-red btn-sm" onclick="deleteStaff('${s.id}')">🗑</button>
+        </div>
+      </div>
+      <p style="font-size:.87rem;color:#666;">${escHtml(s.bio)}</p>
+      <div style="margin-top:.5rem;">${(s.qualifications||[]).map(q=>`<span style="background:#e8f4fd;color:#1a6baa;border-radius:12px;font-size:.72rem;font-weight:700;padding:.18rem .55rem;margin:.15rem;display:inline-block;">${escHtml(q)}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function openStaffModal(id) {
+  editingId = id || null;
+  const s = id ? content.staff.find(x=>x.id===id) : null;
+  document.getElementById('staff-modal-title').textContent = id ? 'Edit Staff Member' : 'Add Staff Member';
+  document.getElementById('sm-name').value = s?.name || '';
+  document.getElementById('sm-role').value = s?.role || '';
+  document.getElementById('sm-email').value = s?.email || '';
+  document.getElementById('sm-bio').value = s?.bio || '';
+  document.getElementById('sm-quals').value = (s?.qualifications||[]).join('\n');
+  document.getElementById('staff-modal').classList.add('show');
+}
+function editStaff(id) { openStaffModal(id); }
+
+async function saveStaff() {
+  const member = {
+    id: editingId || 'staff-' + Date.now(),
+    name: document.getElementById('sm-name').value,
+    role: document.getElementById('sm-role').value,
+    email: document.getElementById('sm-email').value,
+    bio: document.getElementById('sm-bio').value,
+    qualifications: document.getElementById('sm-quals').value.split('\n').filter(x=>x.trim())
+  };
+  if (!member.name) { toast('Please enter a name', 'error'); return; }
+  if (editingId) { const i = content.staff.findIndex(x=>x.id===editingId); content.staff[i] = member; }
+  else { content.staff.push(member); }
+  closeModal('staff-modal');
+  renderStaff(); renderOverview();
+  await saveToGitHub(content);
+}
+
+async function deleteStaff(id) {
+  if (!confirm('Remove this staff member?')) return;
+  content.staff = content.staff.filter(x=>x.id!==id);
+  renderStaff(); renderOverview();
+  await saveToGitHub(content);
+}
+
+// ── ADMISSIONS ─────────────────────────────────────────────────────────────
+function renderAdmissions() {
+  const a = content.admissions || {};
+  document.getElementById('adm-intro').value = a.intro || '';
+  document.getElementById('adm-15hr').value = a.funding_15hr || '';
+  document.getElementById('adm-30hr').value = a.funding_30hr || '';
+  document.getElementById('adm-2yr').value = a.funding_2yr || '';
+  renderFaq();
+}
+
+function renderFaq() {
+  const list = document.getElementById('faq-list');
+  list.innerHTML = (content.admissions?.faq||[]).map((f,i) => `
+    <div class="card" style="padding:1rem;margin-bottom:.6rem;">
+      <div class="form-group"><label>Question ${i+1}</label><input type="text" value="${escHtml(f.q)}" onchange="content.admissions.faq[${i}].q=this.value"></div>
+      <div class="form-group" style="margin-bottom:.25rem;"><label>Answer</label><textarea rows="2" onchange="content.admissions.faq[${i}].a=this.value">${escHtml(f.a)}</textarea></div>
+      <button class="btn btn-red btn-sm" onclick="deleteFaq(${i})">🗑 Remove</button>
+    </div>`).join('');
+}
+
+function addFaq() {
+  content.admissions.faq = content.admissions.faq || [];
+  content.admissions.faq.push({ q: 'New question?', a: 'Answer here.' });
+  renderFaq();
+}
+
+function deleteFaq(i) { content.admissions.faq.splice(i,1); renderFaq(); }
+
+async function saveAdmissions() {
+  content.admissions.intro = document.getElementById('adm-intro').value;
+  content.admissions.funding_15hr = document.getElementById('adm-15hr').value;
+  content.admissions.funding_30hr = document.getElementById('adm-30hr').value;
+  content.admissions.funding_2yr = document.getElementById('adm-2yr').value;
+  await saveToGitHub(content);
+}
+
+// ── OFSTED ─────────────────────────────────────────────────────────────────
+function renderOfsted() {
+  const o = content.ofsted || {};
+  const setVal = (id, val) => { const el=document.getElementById(id); if(el) el.value=val||''; };
+  setVal('of-overall', o.overall); setVal('of-date', o.date);
+  setVal('of-qe', o.quality_of_education); setVal('of-ba', o.behaviour_and_attitudes);
+  setVal('of-pd', o.personal_development); setVal('of-lm', o.leadership_and_management);
+  setVal('of-url', o.report_url);
+  document.getElementById('prev-reports-list').innerHTML = (o.previous_reports||[]).map((r,i)=>`
+    <div style="display:flex;gap:.5rem;margin-bottom:.5rem;align-items:center;">
+      <input type="text" value="${escHtml(r.date)}" placeholder="Date" style="width:150px;" onchange="content.ofsted.previous_reports[${i}].date=this.value">
+      <input type="url" value="${escHtml(r.url)}" placeholder="URL" style="flex:1;" onchange="content.ofsted.previous_reports[${i}].url=this.value">
+      <button class="btn btn-red btn-sm" onclick="content.ofsted.previous_reports.splice(${i},1);renderOfsted()">🗑</button>
+    </div>`).join('');
+}
+
+function addPrevReport() {
+  content.ofsted.previous_reports = content.ofsted.previous_reports || [];
+  content.ofsted.previous_reports.push({ date:'', url:'#' });
+  renderOfsted();
+}
+
+async function saveOfsted() {
+  const o = content.ofsted;
+  o.overall = document.getElementById('of-overall').value;
+  o.date = document.getElementById('of-date').value;
+  o.quality_of_education = document.getElementById('of-qe').value;
+  o.behaviour_and_attitudes = document.getElementById('of-ba').value;
+  o.personal_development = document.getElementById('of-pd').value;
+  o.leadership_and_management = document.getElementById('of-lm').value;
+  o.report_url = document.getElementById('of-url').value;
+  await saveToGitHub(content);
+}
+
+// ── POLICIES ───────────────────────────────────────────────────────────────
+function renderPolicies() {
+  const renderList = (id, items, type) => {
+    document.getElementById(id).innerHTML = items.map((p,i)=>`
+      <span class="policy-tag">${escHtml(p)}<button onclick="deletePolicy('${type}',${i})" title="Remove">✕</button></span>`).join('');
+  };
+  renderList('eyfs-policies', content.policies_eyfs||[], 'eyfs');
+  renderList('additional-policies', content.policies_additional||[], 'additional');
+}
+
+function addPolicy(type) {
+  const id = type==='eyfs' ? 'new-eyfs-policy' : 'new-additional-policy';
+  const val = document.getElementById(id).value.trim();
+  if (!val) return;
+  if (type==='eyfs') content.policies_eyfs.push(val);
+  else content.policies_additional.push(val);
+  document.getElementById(id).value = '';
+  renderPolicies();
+}
+
+function deletePolicy(type, i) {
+  if (type==='eyfs') content.policies_eyfs.splice(i,1);
+  else content.policies_additional.splice(i,1);
+  renderPolicies();
+}
+
+async function savePolicies() { await saveToGitHub(content); }
+
+// ── SETTINGS ───────────────────────────────────────────────────────────────
+function saveGitHubSettings() {
+  GH.user = document.getElementById('gh-user').value.trim();
+  GH.repo = document.getElementById('gh-repo').value.trim();
+  GH.branch = document.getElementById('gh-branch').value.trim() || 'main';
+  localStorage.setItem('cp_gh_user', GH.user);
+  localStorage.setItem('cp_gh_repo', GH.repo);
+  localStorage.setItem('cp_gh_branch', GH.branch);
+  toast('✅ GitHub settings saved!', 'success');
+}
+
+function changePassword() {
+  const np = document.getElementById('new-pw').value;
+  const cp = document.getElementById('confirm-pw').value;
+  if (!np) { toast('Please enter a new password', 'error'); return; }
+  if (np !== cp) { toast('Passwords do not match', 'error'); return; }
+  toast(`New password: ${np} — update this in admin/index.html line with ADMIN_PASSWORD`, 'success');
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+name)?.classList.add('active');
+  event?.currentTarget?.classList.add('active');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+function setStatus(msg) { document.getElementById('saveStatus').textContent = msg; }
+
+function logout() {
+  sessionStorage.removeItem('cp_admin');
+  sessionStorage.removeItem('cp_token');
+  window.location.href = 'index.html';
+}
+
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function getDefaultContent() {
+  return {
+    meta:{ last_updated: new Date().toISOString().split('T')[0] },
+    contact:{ phone:'01694 771797', email:'maria@churchpreenpreschool.org.uk',
+      admissions_email:'info@churchpreenpreschool.co.uk', emergency_phone:'01694 771359',
+      address_line1:'Church Preen Village Hall', address_line2:'Church Preen',
+      address_line3:'Church Stretton', address_line4:'Shropshire', postcode:'SY6 7LH',
+      opening_days:'Monday to Wednesday', opening_hours:'9:00am – 3:00pm',
+      opening_note:'Term time only.',
+      facebook_url:'https://www.facebook.com/preenpreschool',
+      instagram_url:'https://www.instagram.com/churchpreenpreschool',
+      charity_number:'1033121' },
+    staff:[], news:[], events:[], terms:[], gallery:[],
+    ofsted:{ overall:'Good', date:'4 June 2024' },
+    admissions:{ faq:[] }, policies_eyfs:[], policies_additional:[]
+  };
+}
+</script>
+</body>
+</html>
