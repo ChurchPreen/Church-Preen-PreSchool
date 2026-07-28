@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Holiday Packing">
+<title>Holiday Packing</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Exo+2:wght@300;400;500;600&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Exo 2',sans-serif;background:#0a0a1a;color:#e0f7ff;min-height:100vh;background-image:radial-gradient(ellipse at 20% 50%, rgba(0,255,255,0.03) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(120,0,255,0.04) 0%, transparent 60%)}
+
+/* HEADER */
+.header{background:rgba(10,15,35,0.95);border-bottom:1px solid rgba(0,255,255,0.3);padding:12px 16px;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);box-shadow:0 0 20px rgba(0,255,255,0.1)}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.header-title{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:#00ffff;text-shadow:0 0 10px rgba(0,255,255,0.8),0 0 20px rgba(0,255,255,0.4);letter-spacing:2px}
+.sync-status{display:flex;align-items:center;gap:5px;font-size:11px;color:#00ffff99}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#333;flex-shrink:0;transition:all 0.3s}
+.sync-dot.syncing{background:#f59e0b;box-shadow:0 0 8px #f59e0b}
+.sync-dot.synced{background:#00ffff;box-shadow:0 0 8px rgba(0,255,255,0.8)}
+.sync-dot.error{background:#ff4466;box-shadow:0 0 8px #ff4466}
+
+/* SLIDER */
+.dur-row{display:flex;align-items:center;gap:10px}
+.dur-row label{font-size:12px;color:#00ffff99;white-space:nowrap;letter-spacing:1px;text-transform:uppercase}
+.dur-row input[type=range]{flex:1;height:4px;accent-color:#00ffff;background:rgba(0,255,255,0.2);border-radius:2px}
+.days-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:#00ffff;text-shadow:0 0 10px rgba(0,255,255,0.8);min-width:28px;text-align:right}
+.days-unit{font-size:11px;color:#00ffff66;letter-spacing:1px}
+
+/* NAV */
+.nav{display:flex;gap:6px;padding:10px 16px;background:rgba(10,15,35,0.9);border-bottom:1px solid rgba(0,255,255,0.15);overflow-x:auto;backdrop-filter:blur(10px)}
+.nav-btn{font-family:'Exo 2',sans-serif;font-size:14px;padding:8px 16px;border-radius:20px;border:1px solid rgba(0,255,255,0.3);background:rgba(0,255,255,0.05);cursor:pointer;color:#00ffff99;white-space:nowrap;flex-shrink:0;letter-spacing:0.5px;transition:all 0.2s}
+.nav-btn:hover{border-color:rgba(0,255,255,0.6);background:rgba(0,255,255,0.1);color:#00ffff}
+.nav-btn.active{background:rgba(0,255,255,0.15);color:#00ffff;border-color:#00ffff;box-shadow:0 0 12px rgba(0,255,255,0.3),inset 0 0 12px rgba(0,255,255,0.05)}
+.reset-btn{font-family:'Exo 2',sans-serif;font-size:14px;padding:8px 16px;border-radius:20px;border:1px solid rgba(255,100,100,0.4);background:rgba(255,50,50,0.05);cursor:pointer;color:#ff6688;white-space:nowrap;flex-shrink:0;margin-left:auto;transition:all 0.2s}
+.reset-btn:hover{border-color:#ff4466;box-shadow:0 0 10px rgba(255,68,102,0.3)}
+
+/* CONTENT */
+.content{padding:12px 16px;max-width:700px;margin:0 auto}
+
+/* STATS */
+.stats-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.stat{background:rgba(0,255,255,0.05);border-radius:12px;padding:12px;text-align:center;border:1px solid rgba(0,255,255,0.2);box-shadow:0 0 15px rgba(0,255,255,0.05),inset 0 0 15px rgba(0,255,255,0.02)}
+.stat-val{font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:#00ffff;text-shadow:0 0 10px rgba(0,255,255,0.7)}
+.stat-lbl{font-size:12px;color:#00ffff66;margin-top:3px;letter-spacing:1px;text-transform:uppercase}
+
+/* PROGRESS */
+.prog-bar{height:3px;background:rgba(0,255,255,0.1);border-radius:2px;overflow:hidden;margin-bottom:14px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#00ffff,#00aaff);border-radius:2px;transition:width 0.4s;box-shadow:0 0 8px rgba(0,255,255,0.6)}
+
+/* SECTION CARDS */
+.section-card{background:rgba(10,20,40,0.8);border-radius:14px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(0,255,255,0.2);box-shadow:0 0 20px rgba(0,255,255,0.05),inset 0 0 20px rgba(0,0,50,0.3);backdrop-filter:blur(5px);transition:border-color 0.2s}
+.section-card:hover{border-color:rgba(0,255,255,0.35)}
+.section-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;transition:background 0.2s}
+.section-head:hover{background:rgba(0,255,255,0.04)}
+.section-head:active{background:rgba(0,255,255,0.08)}
+
+/* AVATARS */
+.avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;font-family:'Orbitron',monospace;border:1px solid currentColor}
+.av-checks{background:rgba(255,200,0,0.1);color:#ffc800;box-shadow:0 0 8px rgba(255,200,0,0.3)}
+.av-meg{background:rgba(255,0,180,0.1);color:#ff69b4;box-shadow:0 0 8px rgba(255,105,180,0.3)}
+.av-andy{background:rgba(0,100,255,0.1);color:#4da6ff;box-shadow:0 0 8px rgba(77,166,255,0.3)}
+.av-eleanor{background:rgba(0,255,150,0.1);color:#00ff96;box-shadow:0 0 8px rgba(0,255,150,0.3)}
+.av-caravan{background:rgba(255,150,0,0.1);color:#ffaa00;box-shadow:0 0 8px rgba(255,170,0,0.3)}
+.av-camping{background:rgba(0,255,100,0.1);color:#00e676;box-shadow:0 0 8px rgba(0,230,118,0.3)}
+.av-household{background:rgba(180,180,255,0.1);color:#b0b8ff;box-shadow:0 0 8px rgba(176,184,255,0.3)}
+.av-health{background:rgba(255,50,50,0.1);color:#ff6666;box-shadow:0 0 8px rgba(255,100,100,0.3)}
+.av-bedding{background:rgba(180,0,255,0.1);color:#cc66ff;box-shadow:0 0 8px rgba(200,100,255,0.3)}
+.av-food{background:rgba(0,220,120,0.1);color:#00dc78;box-shadow:0 0 8px rgba(0,220,120,0.3)}
+.av-media{background:rgba(100,50,255,0.1);color:#8855ff;box-shadow:0 0 8px rgba(136,85,255,0.3)}
+.av-leftcaravan{background:rgba(0,200,255,0.1);color:#00c8ff;box-shadow:0 0 8px rgba(0,200,255,0.3)}
+.av-draindown{background:rgba(0,255,200,0.1);color:#00ffc8;box-shadow:0 0 8px rgba(0,255,200,0.3)}
+
+.section-title{font-size:16px;font-weight:600;flex:1;color:#c0eeff;letter-spacing:0.5px}
+.progress-pill{font-size:11px;padding:3px 9px;border-radius:20px;background:rgba(0,255,255,0.08);color:#00ffff88;border:1px solid rgba(0,255,255,0.15)}
+.chevron{color:#00ffff44;font-size:18px;flex-shrink:0;transition:transform 0.2s}
+.chevron.open{transform:rotate(180deg)}
+.item-list{border-top:1px solid rgba(0,255,255,0.1)}
+
+/* CHECK ROWS */
+.item-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(0,255,255,0.06)}
+.item-row:last-child{border-bottom:none}
+.item-row input[type=checkbox]{width:20px;height:20px;accent-color:#00ffff;cursor:pointer;flex-shrink:0}
+.item-info{flex:1;min-width:0}
+.item-name{font-size:16px;font-weight:500;color:#c0eeff}
+.item-name.done{text-decoration:line-through;color:#ffffff33}
+.item-meta{font-size:11px;color:#00ffff99;margin-top:2px}
+.check-badge{font-size:13px;padding:4px 12px;border-radius:20px;flex-shrink:0}
+.check-badge.todo{background:rgba(255,200,0,0.1);color:#ffc800;border:1px solid rgba(255,200,0,0.3)}
+.check-badge.done-badge{background:rgba(0,255,200,0.1);color:#00ffc8;border:1px solid rgba(0,255,200,0.3)}
+
+/* COUNTER ROWS */
+.counter-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(0,255,255,0.06);transition:background 0.2s}
+.counter-row:last-child{border-bottom:none}
+.counter-row.complete{background:rgba(0,255,200,0.04)}
+.counter-info{flex:1;min-width:0}
+.counter-name{font-size:14px;font-weight:500;color:#c0eeff}
+.counter-name.complete{color:#00ffc8;text-shadow:0 0 8px rgba(0,255,200,0.4)}
+.counter-meta{font-size:11px;color:#00ffff99;margin-top:2px}
+.counter-controls{display:flex;align-items:center;flex-shrink:0;border:1px solid rgba(0,255,255,0.25);border-radius:10px;overflow:hidden;box-shadow:0 0 8px rgba(0,255,255,0.1)}
+.counter-btn{width:36px;height:36px;border:none;background:rgba(0,20,40,0.8);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0;transition:all 0.15s}
+.counter-btn.minus{color:#ff6688}
+.counter-btn.minus:active{background:rgba(255,68,102,0.2)}
+.counter-btn.plus{color:#00ffcc;background:rgba(0,255,200,0.05)}
+.counter-btn.plus:active{background:rgba(0,255,200,0.2)}
+.counter-val{font-family:'Orbitron',monospace;font-size:13px;font-weight:600;color:#00ffff;min-width:48px;text-align:center;padding:0 4px;border-left:1px solid rgba(0,255,255,0.2);border-right:1px solid rgba(0,255,255,0.2);height:36px;display:flex;align-items:center;justify-content:center;background:rgba(0,255,255,0.03)}
+.counter-val.complete{color:#00ffc8;text-shadow:0 0 8px rgba(0,255,200,0.6)}
+
+/* TOGGLE */
+.toggle-wrap{display:flex;align-items:center;flex-shrink:0}
+.toggle{position:relative;width:76px;height:28px;flex-shrink:0;cursor:pointer}
+.toggle-track{position:absolute;inset:0;border-radius:28px;transition:all 0.3s;display:flex;align-items:center;justify-content:space-between;padding:0 7px;font-size:9px;font-weight:700;letter-spacing:0.5px}
+.toggle-track.pack{background:rgba(0,255,200,0.15);color:#00ffc8;border:1px solid rgba(0,255,200,0.4);box-shadow:0 0 10px rgba(0,255,200,0.2)}
+.toggle-track.caravan{background:rgba(0,200,255,0.15);color:#00c8ff;border:1px solid rgba(0,200,255,0.4);box-shadow:0 0 10px rgba(0,200,255,0.2)}
+.toggle-knob{position:absolute;top:3px;width:22px;height:22px;border-radius:50%;background:#0a0a1a;transition:left 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.5)}
+.toggle-knob.pack{left:3px;border:1px solid rgba(0,255,200,0.6);box-shadow:0 0 6px rgba(0,255,200,0.4)}
+.toggle-knob.caravan{left:51px;border:1px solid rgba(0,200,255,0.6);box-shadow:0 0 6px rgba(0,200,255,0.4)}
+
+/* AT CARAVAN NOTE */
+.at-caravan-count{font-size:11px;color:#00c8ff88;padding:6px 14px;border-top:1px solid rgba(0,200,255,0.1);font-style:italic}
+
+/* ADD/EDIT AREAS */
+.add-area{border-top:1px solid rgba(0,255,255,0.1);padding:12px 14px;background:rgba(0,10,25,0.5)}
+.add-field{width:100%;border:1px solid rgba(0,255,255,0.2);border-radius:10px;padding:9px 12px;font-size:14px;background:rgba(0,20,40,0.8);color:#c0eeff;margin-bottom:8px;outline:none;-webkit-appearance:none;font-family:'Exo 2',sans-serif;transition:border-color 0.2s}
+.add-field:focus{border-color:rgba(0,255,255,0.6);box-shadow:0 0 10px rgba(0,255,255,0.1)}
+.add-field::placeholder{color:#00ffff33}
+.add-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.add-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.add-btn{width:100%;background:rgba(0,255,255,0.1);color:#00ffff;border:1px solid rgba(0,255,255,0.4);border-radius:10px;padding:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Exo 2',sans-serif;letter-spacing:0.5px;transition:all 0.2s;box-shadow:0 0 10px rgba(0,255,255,0.05)}
+.add-btn:hover{background:rgba(0,255,255,0.15);box-shadow:0 0 15px rgba(0,255,255,0.2)}
+.add-btn:active{background:rgba(0,255,255,0.2)}
+.setup-row{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(0,255,255,0.06)}
+.setup-row:last-child{border-bottom:none}
+.setup-info{flex:1;min-width:0}
+.setup-name{font-size:14px;font-weight:500;color:#c0eeff}
+.setup-meta{font-size:11px;color:#00ffff99;margin-top:1px}
+.edit-btn{background:rgba(0,255,200,0.05);border:1px solid rgba(0,255,200,0.3);border-radius:8px;cursor:pointer;color:#00ffc8;padding:5px 8px;font-size:12px;flex-shrink:0;white-space:nowrap;transition:all 0.2s}
+.edit-btn:hover{box-shadow:0 0 8px rgba(0,255,200,0.3)}
+.del-btn{background:rgba(255,68,102,0.05);border:1px solid rgba(255,68,102,0.3);border-radius:8px;cursor:pointer;color:#ff4466;padding:5px 8px;font-size:13px;flex-shrink:0;transition:all 0.2s}
+.del-btn:hover{box-shadow:0 0 8px rgba(255,68,102,0.3)}
+.edit-panel{background:rgba(0,10,30,0.9);border-bottom:1px solid rgba(0,255,255,0.1);padding:12px 14px}
+.edit-actions{display:flex;gap:8px;margin-top:8px}
+.save-btn{flex:1;background:rgba(0,255,200,0.15);color:#00ffc8;border:1px solid rgba(0,255,200,0.4);border-radius:10px;padding:9px;font-size:14px;cursor:pointer;font-family:'Exo 2',sans-serif;box-shadow:0 0 10px rgba(0,255,200,0.1)}
+.save-btn:active{background:rgba(0,255,200,0.25)}
+.cancel-btn{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:9px;font-size:14px;cursor:pointer;color:#ffffff66;font-family:'Exo 2',sans-serif}
+
+/* TOAST */
+.saved-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,255,200,0.15);color:#00ffc8;border:1px solid rgba(0,255,200,0.4);padding:8px 18px;border-radius:20px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;box-shadow:0 0 20px rgba(0,255,200,0.2);font-family:'Exo 2',sans-serif;backdrop-filter:blur(10px)}
+.saved-toast.show{opacity:1}
+.loading{text-align:center;padding:40px;font-size:14px;color:#00ffff66;font-family:'Orbitron',monospace;letter-spacing:2px}
+
+/* TWO-ROW ITEM CARDS */
+.item-card{padding:10px 14px;border-bottom:1px solid rgba(0,255,255,0.06);transition:background 0.2s}
+.item-card:last-child{border-bottom:none}
+.item-card.complete{background:rgba(0,255,200,0.04)}
+.item-card-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.item-card-name{font-size:17px;font-weight:600;color:#c0eeff;flex:1;min-width:0}
+.item-card-name.complete{color:#00ffc8;text-shadow:0 0 8px rgba(0,255,200,0.4)}
+.item-card-total{font-size:13px;color:#00ffff66;flex-shrink:0;margin-left:8px}
+.item-card-total span{color:#00ffff99;font-weight:600}
+.item-card-loc{font-size:13px;color:#00ffff99;margin-bottom:8px}
+.item-card-row2{display:flex;align-items:center;gap:0;background:rgba(0,0,30,0.3);border-radius:10px;border:1px solid rgba(0,255,255,0.1);overflow:hidden;margin-top:6px}
+.item-card-col{flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 4px;gap:5px}
+.item-card-divider{width:1px;background:rgba(0,255,255,0.1);align-self:stretch}
+.item-card-label{font-size:12px;color:#00ffff99;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap}
+.item-mini-controls{display:flex;align-items:center;gap:0;border:1px solid rgba(0,255,255,0.2);border-radius:8px;overflow:hidden}
+.mini-btn{width:40px;height:38px;border:none;background:rgba(0,20,40,0.8);cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:all 0.15s;flex-shrink:0}
+.mini-btn.minus{color:#ff6688}
+.mini-btn.minus:active{background:rgba(255,68,102,0.2)}
+.mini-btn.plus{color:#00ffcc;background:rgba(0,255,200,0.05)}
+.mini-btn.plus:active{background:rgba(0,255,200,0.2)}
+.mini-val{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;color:#00ffff;min-width:34px;text-align:center;padding:0 2px;border-left:1px solid rgba(0,255,255,0.15);border-right:1px solid rgba(0,255,255,0.15);height:38px;display:flex;align-items:center;justify-content:center;background:rgba(0,255,255,0.03)}
+.mini-val.complete{color:#00ffc8;text-shadow:0 0 8px rgba(0,255,200,0.6)}
+.item-to-pack{font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:#00ffff;text-shadow:0 0 10px rgba(0,255,255,0.5);height:38px;display:flex;align-items:center;justify-content:center;min-width:40px}
+.item-to-pack.all-done{color:#00ffc8;text-shadow:0 0 10px rgba(0,255,200,0.6)}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <span class="header-title">🏕️ Holiday Packing</span>
+    <div class="sync-status"><span class="sync-dot" id="sdot"></span><span id="slbl">connecting...</span></div>
+  </div>
+  <div class="dur-row">
+    <label for="dur">Duration</label>
+    <input type="range" id="dur" min="1" max="60" step="1" value="7" oninput="setDays(+this.value)">
+    <span class="days-val" id="days-out">7</span>
+    <span class="days-unit">days</span>
+  </div>
+</div>
+<div class="nav" id="nav"></div>
+<div class="content" id="content"><div class="loading">Loading your packing list...</div></div>
+<div class="saved-toast" id="toast">Saved ✓</div>
+
+<script>
+const API_KEY='$2a$10$j.laPOvt3LSDrWC0DSN3oePhIXm/ipg3mpgAlBUysmibY8/42sl76';
+const BIN_BASE='https://api.jsonbin.io/v3/b';
+let BIN_ID=localStorage.getItem('hpk_bin_id')||'6a53f304da38895dfe53b246';
+let saveTimer=null;
+let lastSaved='';
+
+const SECTIONS=[
+  {id:'checks',label:'Pre-departure checks',av:'!',cls:'av-checks',type:'check'},
+  {id:'meg',label:'Meg',av:'M',cls:'av-meg',type:'pack'},
+  {id:'andy',label:'Andy',av:'A',cls:'av-andy',type:'pack'},
+  {id:'eleanor',label:'Eleanor',av:'E',cls:'av-eleanor',type:'pack'},
+  {id:'caravan',label:'Caravan',av:'Cv',cls:'av-caravan',type:'pack'},
+  {id:'camping',label:'Camping',av:'Ca',cls:'av-camping',type:'pack'},
+  {id:'household',label:'Household',av:'H',cls:'av-household',type:'pack'},
+  {id:'health',label:'Health',av:'Rx',cls:'av-health',type:'pack'},
+  {id:'bedding',label:'Bedding',av:'B',cls:'av-bedding',type:'pack'},
+  {id:'food',label:'Food',av:'F',cls:'av-food',type:'pack'},
+  {id:'media',label:'Media & Tech',av:'T',cls:'av-media',type:'pack'},
+  {id:'leftcaravan',label:'Left at Caravan',av:'Lc',cls:'av-leftcaravan',type:'pack'},
+  {id:'draindown',label:'Drain Down Checklist',av:'D',cls:'av-draindown',type:'check'},
+];
+
+const SEED=[
+  {s:'checks',n:'Wash van',loc:'',min:1,pd:0},
+  {s:'checks',n:'Tyre pressure check',loc:'',min:1,pd:0},
+  {s:'checks',n:'Fluids check',loc:'',min:1,pd:0},
+  {s:'checks',n:'Cut hedges & grass',loc:'',min:1,pd:0},
+  {s:'checks',n:'Caravan battery fitted',loc:'Under Stairs',min:1,pd:0},
+  {s:'meg',n:'Underwear',loc:'Meg',min:2,pd:1},
+  {s:'meg',n:'Socks',loc:'Meg',min:2,pd:1},
+  {s:'meg',n:'PJs',loc:'Meg',min:1,pd:0.2},
+  {s:'meg',n:'T-shirts',loc:'Meg',min:2,pd:1},
+  {s:'meg',n:'Jumpers',loc:'Meg',min:1,pd:0.3},
+  {s:'meg',n:'Joggers',loc:'Meg',min:1,pd:0.3},
+  {s:'meg',n:'Trousers',loc:'Meg',min:1,pd:0.15},
+  {s:'meg',n:'Book',loc:'Meg',min:1,pd:0},
+  {s:'meg',n:'Phone',loc:'Meg',min:1,pd:0},
+  {s:'meg',n:'Headphones',loc:'Meg',min:1,pd:0},
+  {s:'meg',n:'Phone charger',loc:'Meg',min:1,pd:0},
+  {s:'meg',n:'Vape & pods/coils',loc:'Meg',min:2,pd:0},
+  {s:'meg',n:'Vape oil',loc:'Meg',min:0,pd:1},
+  {s:'meg',n:'Wallet & cards',loc:'Meg',min:1,pd:0},
+  {s:'meg',n:'Deodorant',loc:'Bathroom - Floor Unit',min:1,pd:0},
+  {s:'meg',n:'Sanitary towels',loc:'Bathroom - Wardrobe',min:1,pd:0},
+  {s:'meg',n:'Tampons',loc:'Bathroom - Wardrobe',min:1,pd:0},
+  {s:'meg',n:'Manicure set',loc:'Meg chest of drawers',min:1,pd:0},
+  {s:'andy',n:'Pants',loc:'Andy',min:1,pd:1},
+  {s:'andy',n:'Socks',loc:'Andy',min:1,pd:1},
+  {s:'andy',n:'T-shirts',loc:'Andy',min:1,pd:0.5},
+  {s:'andy',n:'Shorts',loc:'Andy',min:1,pd:0.33},
+  {s:'andy',n:'Jumper',loc:'Andy',min:1,pd:0.33},
+  {s:'andy',n:'Jeans',loc:'Andy',min:1,pd:0.25},
+  {s:'andy',n:'Joggers',loc:'Andy',min:1,pd:0.33},
+  {s:'andy',n:'Coat',loc:'Andy',min:1,pd:0.15},
+  {s:'andy',n:'PJs',loc:'Andy',min:1,pd:0.2},
+  {s:'andy',n:'Crocs',loc:'Andy',min:1,pd:0},
+  {s:'andy',n:'Trainers',loc:'Andy',min:1,pd:0},
+  {s:'andy',n:'Walking boots',loc:'Andy',min:1,pd:0},
+  {s:'andy',n:'Swim shorts',loc:'Andy',min:1,pd:0},
+  {s:'andy',n:'Belt',loc:'Andy',min:1,pd:0},
+  {s:'andy',n:'Watch',loc:'Andy',min:1,pd:0},
+  {s:'andy',n:'Prescriptions',loc:'Andy',min:1,pd:0},
+  {s:'andy',n:'Blood pressure monitor',loc:'Andy',min:1,pd:0},
+  {s:'andy',n:'Beard trimmer',loc:'Andy',min:1,pd:0},
+  {s:'eleanor',n:'Underwear',loc:'Eleanor',min:2,pd:1},
+  {s:'eleanor',n:'T-shirts',loc:'Eleanor',min:1,pd:1},
+  {s:'eleanor',n:'Jumpers',loc:'Eleanor',min:0,pd:0.4},
+  {s:'eleanor',n:'Socks',loc:'Eleanor',min:2,pd:1},
+  {s:'eleanor',n:'Trousers',loc:'Eleanor',min:0,pd:0.4},
+  {s:'eleanor',n:'Shorts',loc:'Eleanor',min:0,pd:0.4},
+  {s:'eleanor',n:'Dress',loc:'Eleanor',min:0,pd:0.3},
+  {s:'eleanor',n:'Swimming costume',loc:'Eleanor',min:1,pd:0},
+  {s:'eleanor',n:'PJs',loc:'Eleanor',min:0,pd:0.3},
+  {s:'eleanor',n:'Hairbrush',loc:'Kitchen - Trolley',min:1,pd:0},
+  {s:'eleanor',n:'Hairbands',loc:'Kitchen - Trolley',min:1,pd:0.6},
+  {s:'eleanor',n:'Pencil case',loc:'Kitchen - Trolley',min:1,pd:0},
+  {s:'eleanor',n:'Writing pad / activity books',loc:'Kitchen - Dresser Cupboard',min:3,pd:0},
+  {s:'eleanor',n:'Tablet',loc:'Kitchen - Trolley',min:2,pd:0},
+  {s:'eleanor',n:'Headphones',loc:'Kitchen - Trolley',min:1,pd:0},
+  {s:'eleanor',n:'Tablet charger',loc:'Kitchen - Trolley',min:1,pd:0},
+  {s:'eleanor',n:'Headphones charger',loc:'Kitchen - Trolley',min:1,pd:0},
+  {s:'caravan',n:'Trugs',loc:'Workshop - Caravan',min:4,pd:0},
+  {s:'caravan',n:'Caravan carpet',loc:'Workshop - Caravan',min:3,pd:0},
+  {s:'caravan',n:'Caravan runners',loc:'Workshop - Caravan',min:4,pd:0},
+  {s:'caravan',n:'Vacuum storage bags',loc:'Workshop - Caravan',min:10,pd:0},
+  {s:'caravan',n:'Salt',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Pepper',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Fry light',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Soy sauce',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Seasoning',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Teabag tupperware',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Groundsheet',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Tarp',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Sleeping bags',loc:'Workshop - Caravan',min:3,pd:0},
+  {s:'caravan',n:'Beach mat',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Beach bucket & spades',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Magnets',loc:'Workshop - Caravan',min:1,pd:0},
+  {s:'caravan',n:'Awning lanterns',loc:'Workshop - Caravan',min:2,pd:0},
+  {s:'caravan',n:'Spirit level',loc:'Workshop - Tools',min:1,pd:0},
+  {s:'caravan',n:'Hammer',loc:'Workshop - Tools',min:1,pd:0},
+  {s:'caravan',n:'Tool kit',loc:'Workshop - Tools',min:1,pd:0},
+  {s:'caravan',n:'Kneeling mats',loc:'',min:2,pd:0},
+  {s:'camping',n:'Gas stove',loc:'Workshop - Bushcraft/Prepping',min:2,pd:0},
+  {s:'camping',n:'Gas canisters',loc:'Workshop - Bushcraft/Prepping',min:0,pd:2},
+  {s:'camping',n:'Stove wind shield',loc:'Workshop - Bushcraft/Prepping',min:1,pd:0},
+  {s:'camping',n:'Water container',loc:'Workshop - Bushcraft/Prepping',min:1,pd:0},
+  {s:'camping',n:'Coolboxes',loc:'Workshop - Bushcraft/Prepping',min:2,pd:0},
+  {s:'camping',n:'Coolbox adapter',loc:'Workshop - Bushcraft/Prepping',min:1,pd:0},
+  {s:'camping',n:'Coolbox lead',loc:'Workshop - Bushcraft/Prepping',min:1,pd:0},
+  {s:'camping',n:'Beach chairs',loc:'Workshop - Bushcraft/Prepping',min:3,pd:0},
+  {s:'camping',n:'Adventure tarp',loc:'Workshop - Bushcraft/Prepping',min:1,pd:0},
+  {s:'camping',n:'Bushcraft kit',loc:'Workshop - Bushcraft/Prepping',min:1,pd:0},
+  {s:'camping',n:'Bike charger',loc:'Workshop - Bushcraft/Prepping',min:1,pd:0},
+  {s:'camping',n:'Tent',loc:'Workshop',min:1,pd:0},
+  {s:'camping',n:'Bikes',loc:'Workshop',min:2,pd:0},
+  {s:'camping',n:'Helmets',loc:'Workshop',min:2,pd:0},
+  {s:'camping',n:'Fishing & crabbing kit',loc:'Workshop - Fishing Gear',min:1,pd:0},
+  {s:'camping',n:'Life jacket',loc:'Workshop - Fishing Gear',min:1,pd:0},
+  {s:'camping',n:'Awning string lights',loc:'Under Stairs',min:2,pd:0},
+  {s:'camping',n:'Torches',loc:'Kitchen - Dresser',min:3,pd:0},
+  {s:'household',n:'Tin foil',loc:'Workshop - Household Cleaning',min:1,pd:0},
+  {s:'household',n:'Cling film',loc:'Workshop - Household Cleaning',min:1,pd:0},
+  {s:'household',n:'Anti-bac spray',loc:'Workshop - Household Cleaning',min:1,pd:0},
+  {s:'household',n:'Cleaning cloths',loc:'Utility - Drawer',min:3,pd:0.15},
+  {s:'household',n:'T-towels',loc:'Kitchen - Dresser Drawer',min:2,pd:0.3},
+  {s:'household',n:'Shower towels',loc:'Bathroom - Wardrobe',min:3,pd:0},
+  {s:'household',n:'Beach towels',loc:'Bathroom - Wardrobe',min:3,pd:0},
+  {s:'household',n:'Flannels',loc:'Bathroom - Wardrobe',min:3,pd:0},
+  {s:'household',n:'Toothbrushes',loc:'Bathroom - Floor Unit',min:3,pd:0},
+  {s:'household',n:'Toothpaste',loc:'Bathroom - Floor Unit',min:2,pd:0},
+  {s:'household',n:'Shampoo',loc:'Bathroom - Floor Unit',min:0,pd:0.15},
+  {s:'household',n:'Conditioner',loc:'Bathroom - Floor Unit',min:0,pd:0.15},
+  {s:'household',n:'Shower gel',loc:'Bathroom - Floor Unit',min:0,pd:0.15},
+  {s:'household',n:'Razors',loc:'Bathroom - Sink Unit',min:1,pd:0},
+  {s:'household',n:'Hand soap',loc:'Bathroom - Floor Unit',min:1,pd:0},
+  {s:'household',n:'Bin bags',loc:'Workshop - Household Cleaning',min:1,pd:0},
+  {s:'household',n:'Baby wipes',loc:'Under Stairs',min:1,pd:0.15},
+  {s:'household',n:'Anti-bac wipes',loc:'',min:1,pd:0},
+  {s:'household',n:'Grease wipes',loc:'',min:1,pd:0},
+  {s:'household',n:'Dyson',loc:'Utility',min:1,pd:0},
+  {s:'household',n:'Slippers',loc:'Utility',min:3,pd:0},
+  {s:'household',n:'Crocs',loc:'Utility',min:3,pd:0},
+  {s:'household',n:'Trainers',loc:'Utility',min:3,pd:0},
+  {s:'household',n:'Dry robes',loc:'Utility',min:2,pd:0},
+  {s:'household',n:'Waterproofs / coats',loc:'Utility',min:3,pd:0},
+  {s:'household',n:'Hats',loc:'Utility',min:3,pd:0},
+  {s:'household',n:'Keys',loc:'Utility - Key Cupboard',min:1,pd:0},
+  {s:'health',n:'Inhalers',loc:'Utility - Overhead Cupboard',min:2,pd:0},
+  {s:'health',n:'Rennie',loc:'Utility - Overhead Cupboard',min:1,pd:0},
+  {s:'health',n:'Spare glasses',loc:'Under Stairs',min:1,pd:0},
+  {s:'health',n:'Paracetamol',loc:'Utility - Overhead Cupboard',min:1,pd:0},
+  {s:'health',n:'Ibuprofen',loc:'Utility - Overhead Cupboard',min:1,pd:0},
+  {s:'health',n:'Calpol',loc:'Utility - Overhead Cupboard',min:1,pd:0},
+  {s:'health',n:'Arnica',loc:'En-Suite',min:1,pd:0},
+  {s:'health',n:'Oral thrush meds',loc:'Utility - Overhead Cupboard',min:1,pd:0},
+  {s:'health',n:'Lemsip',loc:'Kitchen',min:1,pd:0},
+  {s:'health',n:'Sun cream',loc:'Utility - Overhead Cupboard',min:1,pd:0.15},
+  {s:'health',n:'Aftersun',loc:'Utility - Overhead Cupboard',min:1,pd:0},
+  {s:'health',n:'Germolene',loc:'Utility - Overhead Cupboard',min:1,pd:0},
+  {s:'health',n:'Insect spray',loc:'Utility - Overhead Cupboard',min:1,pd:0},
+  {s:'health',n:'Bite cream',loc:'Utility - Overhead Cupboard',min:1,pd:0},
+  {s:'health',n:'Glasses cleaner',loc:'Utility - Overhead Cupboard',min:1,pd:0},
+  {s:'bedding',n:'King size flat sheet',loc:'Bedding Suitcase',min:1,pd:0},
+  {s:'bedding',n:'Double fitted sheet',loc:'Bedding Suitcase',min:1,pd:0},
+  {s:'bedding',n:'Single flat sheet',loc:'Bedding Suitcase',min:1,pd:0},
+  {s:'bedding',n:'Double mattress cover',loc:'Bedding Suitcase',min:1,pd:0},
+  {s:'bedding',n:'Single mattress cover',loc:'Bedding Suitcase',min:1,pd:0},
+  {s:'bedding',n:'Pillows',loc:'',min:5,pd:0},
+  {s:'bedding',n:'Pillow cases',loc:'Bedding Suitcase',min:5,pd:0},
+  {s:'bedding',n:'Grey throws',loc:'Bedding Suitcase',min:2,pd:0},
+  {s:'bedding',n:'Blankets',loc:'Bedding Suitcase',min:3,pd:0},
+  {s:'food',n:'Ketchup',loc:'Kitchen - Fridge',min:1,pd:0},
+  {s:'food',n:'Brown sauce',loc:'Kitchen - Fridge',min:1,pd:0},
+  {s:'food',n:'BBQ sauce',loc:'Kitchen - Fridge',min:1,pd:0},
+  {s:'food',n:'Mayo',loc:'Kitchen - Dresser Cupboard',min:0,pd:0.15},
+  {s:'food',n:'Vinegar',loc:'Kitchen',min:1,pd:0},
+  {s:'food',n:'Manky sauce',loc:'Kitchen',min:1,pd:0},
+  {s:'food',n:'Decaff tea',loc:'Kitchen - Dresser',min:1,pd:0},
+  {s:'food',n:'Tea',loc:'Kitchen - Dresser Cupboard',min:1,pd:0},
+  {s:'food',n:'Coffee',loc:'Kitchen - Cupboard',min:1,pd:0},
+  {s:'food',n:'Ground coffee',loc:'Kitchen',min:1,pd:0},
+  {s:'food',n:'Tinned food',loc:'Kitchen - Cupboard',min:1,pd:0},
+  {s:'food',n:'Water bottles',loc:'Kitchen - Cupboard',min:3,pd:0},
+  {s:'food',n:'Flask',loc:'Kitchen - Cupboard',min:1,pd:0},
+  {s:'media',n:'Power banks',loc:'Under Stairs',min:4,pd:0},
+  {s:'media',n:'Bluetti & charger',loc:'Under Stairs',min:1,pd:0},
+  {s:'media',n:'Drone',loc:'Under Stairs',min:1,pd:0},
+  {s:'media',n:'Camera',loc:'',min:1,pd:0},
+  {s:'media',n:'Action camera',loc:'Under Stairs',min:1,pd:0},
+  {s:'media',n:'Reading books',loc:'Eleanor / Andy / Meg',min:2,pd:0},
+];
+
+// state.counts = {itemId: number} — how many of each item packed
+// state.checked = {itemId: true} — for checklist items only
+// state.atCaravan = {itemId: true} — toggle
+let state={days:7,view:'pack',items:[],checked:{},counts:{},atCaravan:{},caravanCounts:{},collapsed:{}};
+let editingId=null;
+
+function syncDot(s,msg){
+  document.getElementById('sdot').className='sync-dot '+s;
+  document.getElementById('slbl').textContent=msg;
+}
+
+async function createBin(){
+  syncDot('syncing','creating...');
+  try{
+    const r=await fetch(BIN_BASE,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Master-Key':API_KEY,'X-Bin-Name':'HolidayPacking','X-Bin-Private':'true'},
+      body:JSON.stringify(state)
+    });
+    const d=await r.json();
+    if(d.metadata&&d.metadata.id){
+      BIN_ID=d.metadata.id;
+      localStorage.setItem('hpk_bin_id',BIN_ID);
+      syncDot('synced','synced ✓');
+      return true;
+    }
+  }catch(e){}
+  syncDot('error','error');
+  return false;
+}
+
+async function loadBin(){
+  if(!BIN_ID)return false;
+  syncDot('syncing','loading...');
+  try{
+    const r=await fetch(BIN_BASE+'/'+BIN_ID+'/latest',{headers:{'X-Master-Key':API_KEY}});
+    const d=await r.json();
+    if(d.record&&d.record.items&&d.record.items.length>0){
+      Object.assign(state,d.record);
+      if(!state.atCaravan)state.atCaravan={};
+      if(!state.counts)state.counts={};
+      if(!state.checked)state.checked={};
+      if(!state.caravanCounts)state.caravanCounts={};
+      syncDot('synced','synced ✓');
+      return true;
+    }
+  }catch(e){}
+  syncDot('error','load failed');
+  return false;
+}
+
+async function pushBin(){
+  if(!BIN_ID){await createBin();return;}
+  const data=JSON.stringify(state);
+  if(data===lastSaved)return;
+  lastSaved=data;
+  syncDot('syncing','saving...');
+  try{
+    const r=await fetch(BIN_BASE+'/'+BIN_ID,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},
+      body:data
+    });
+    const d=await r.json();
+    if(d.record){syncDot('synced','synced ✓');showToast();}
+    else syncDot('error','save failed');
+  }catch(e){syncDot('error','offline');}
+}
+
+function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(pushBin,1200);}
+
+let toastTimer;
+function showToast(){
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),1500);
+}
+
+function seedItems(){
+  state.items=SEED.map((d,i)=>({id:'i'+i,section:d.s,name:d.n,location:d.loc,min:d.min,perDay:d.pd}));
+}
+
+async function init(){
+  const loaded=await loadBin();
+  if(!loaded){seedItems();await createBin();}
+  if(!state.atCaravan)state.atCaravan={};
+  if(!state.counts)state.counts={};
+  if(!state.checked)state.checked={};
+  if(!state.caravanCounts)state.caravanCounts={};
+  document.getElementById('dur').value=state.days;
+  document.getElementById('days-out').textContent=state.days;
+  render();
+}
+
+function secType(secId){const s=SECTIONS.find(s=>s.id===secId);return s?s.type:'pack';}
+function isCheck(item){return secType(item.section)==='check';}
+function isAtCaravan(item){return !!state.atCaravan[item.id];}
+function qty(item){return Math.round(item.min+(item.perDay*state.days));}
+function packedCount(item){return state.counts[item.id]||0;}
+function caravanCount(item){return state.caravanCounts[item.id]||0;}
+function neededToPack(item){return Math.max(0,qty(item)-caravanCount(item));}
+function isComplete(item){
+  if(isCheck(item))return !!state.checked[item.id];
+  return packedCount(item)>=neededToPack(item)&&neededToPack(item)>=0;
+}
+
+function render(){renderNav();renderContent();}
+
+function renderNav(){
+  document.getElementById('nav').innerHTML=
+    ['pack','caravan','setup'].map(v=>`<button class="nav-btn${state.view===v?' active':''}" onclick="sv('${v}')">
+      ${v==='pack'?'Pack checklist':v==='caravan'?'At Caravan':'Manage items'}
+    </button>`).join('')+
+    `<button class="reset-btn" onclick="resetAll()">↺ New holiday</button>`;
+}
+
+function sv(v){state.view=v;editingId=null;render();}
+function setDays(v){state.days=v;document.getElementById('days-out').textContent=v;scheduleSave();renderContent();}
+
+function renderContent(){
+  const el=document.getElementById('content');
+  if(state.view==='pack') el.innerHTML=buildPack();
+  else if(state.view==='caravan') el.innerHTML=buildCaravanView();
+  else el.innerHTML=buildSetup();
+}
+
+function buildPack(){
+  const packItems=state.items.filter(i=>!isCheck(i)&&!isAtCaravan(i));
+  const checkItems=state.items.filter(i=>isCheck(i));
+  const totalPack=packItems.length;
+  const donePack=packItems.filter(i=>isComplete(i)).length;
+  const doneChecks=checkItems.filter(i=>isComplete(i)).length;
+  const atCaravanCount=state.items.filter(i=>!isCheck(i)&&isAtCaravan(i)).length;
+  const pct=totalPack?Math.round(donePack/totalPack*100):0;
+
+  let h=`<div class="stats-bar">
+    <div class="stat"><div class="stat-val">${donePack}/${totalPack}</div><div class="stat-lbl">items packed</div></div>
+    <div class="stat"><div class="stat-val">${doneChecks}/${checkItems.length}</div><div class="stat-lbl">checks done</div></div>
+    <div class="stat"><div class="stat-val">${atCaravanCount}</div><div class="stat-lbl">at caravan</div></div>
+  </div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`;
+
+  SECTIONS.forEach(sec=>{
+    const secItems=state.items.filter(i=>i.section===sec.id);
+    const check=sec.type==='check';
+    const visibleItems=check?secItems:secItems.filter(i=>!isAtCaravan(i));
+    const atCaravanInSec=check?0:secItems.filter(i=>isAtCaravan(i)).length;
+    if(!secItems.length)return;
+    const doneInSec=visibleItems.filter(i=>isComplete(i)).length;
+    const col=state.collapsed[sec.id];
+
+    h+=`<div class="section-card"><div class="section-head" onclick="tc('${sec.id}')">
+      <div class="avatar ${sec.cls}">${sec.av}</div>
+      <span class="section-title">${sec.label}</span>
+      <span class="progress-pill">${doneInSec}/${visibleItems.length}</span>
+      <span class="chevron${col?'':' open'}">⌄</span>
+    </div>`;
+
+    if(!col){
+      h+=`<div class="item-list">`;
+      if(visibleItems.length===0){
+        h+=`<div style="padding:12px 14px;font-size:13px;color:#aaa">All items are at the caravan ✓</div>`;
+      } else {
+        visibleItems.forEach(item=>{
+          const done=isComplete(item);
+          if(check){
+            const ticked=!!state.checked[item.id];
+            h+=`<div class="item-row">
+              <input type="checkbox" ${ticked?'checked':''} onchange="tk('${item.id}',this.checked)">
+              <div class="item-info">
+                <div class="item-name${ticked?' done':''}">${esc(item.name)}</div>
+                ${item.location?`<div class="item-meta">${esc(item.location)}</div>`:''}
+              </div>
+              <span class="check-badge ${ticked?'done-badge':'todo'}">${ticked?'done':'to do'}</span>
+            </div>`;
+          } else {
+            const needed=neededToPack(item);
+            const packed=packedCount(item);
+            const totalNeeded=qty(item);
+            const atCar=caravanCount(item);
+            const pdStr=item.perDay>0?` (${item.min}+${item.perDay}/day)`:'';
+            const allDone=packed>=needed&&needed>=0;
+            h+=`<div class="item-card${allDone&&needed>0?' complete':''}">
+              <div class="item-card-row1">
+                <div class="item-card-name${allDone&&needed>0?' complete':''}">${esc(item.name)}${allDone&&needed>0?' ✓':''}</div>
+                <div class="item-card-total">Total: <span>${totalNeeded}</span>${pdStr}</div>
+              </div>
+              ${item.location?`<div class="item-card-loc">${esc(item.location)}</div>`:''}
+              <div class="item-card-row2">
+                <div class="item-card-col">
+                  <div class="item-card-label">🏕 At Caravan</div>
+                  <div class="item-mini-controls">
+                    <button class="mini-btn minus" onclick="adjustCaravanCount('${item.id}',-1)">−</button>
+                    <span class="mini-val">${atCar}</span>
+                    <button class="mini-btn plus" onclick="adjustCaravanCount('${item.id}',1)">+</button>
+                  </div>
+                </div>
+                <div class="item-card-divider"></div>
+                <div class="item-card-col">
+                  <div class="item-card-label">📦 To Pack</div>
+                  <div class="item-to-pack${(needed-packed)<=0?' all-done':''}">${Math.max(0,needed-packed)}</div>
+                </div>
+                <div class="item-card-divider"></div>
+                <div class="item-card-col">
+                  <div class="item-card-label">✓ Packed</div>
+                  <div class="item-mini-controls">
+                    <button class="mini-btn minus" onclick="adjustCount('${item.id}',-1)">−</button>
+                    <span class="mini-val${allDone&&needed>0?' complete':''}">${packed}</span>
+                    <button class="mini-btn plus" onclick="adjustCount('${item.id}',1)">+</button>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+          }
+        });
+      }
+      h+=`</div>`;
+      if(atCaravanInSec>0){
+        h+=`<div class="at-caravan-count">🏕 ${atCaravanInSec} item${atCaravanInSec>1?'s':''} already at caravan</div>`;
+      }
+    }
+    h+=`</div>`;
+  });
+  return h;
+}
+
+function buildCaravanView(){
+  const atCaravanItems=state.items.filter(i=>!isCheck(i)&&isAtCaravan(i));
+  let h=`<div class="stat" style="margin-bottom:12px;background:#E0F2FE;border-color:#BAE6FD">
+    <div class="stat-val" style="color:#0C4A6E">${atCaravanItems.length}</div>
+    <div class="stat-lbl" style="color:#0369A1">items at caravan</div>
+  </div>`;
+  if(!atCaravanItems.length){
+    h+=`<div style="text-align:center;padding:40px;font-size:14px;color:#aaa">No items marked as at caravan yet.<br><br>Use the toggles in Manage Items to mark what's there.</div>`;
+    return h;
+  }
+  SECTIONS.filter(s=>s.type==='pack').forEach(sec=>{
+    const items=atCaravanItems.filter(i=>i.section===sec.id);
+    if(!items.length)return;
+    const col=state.collapsed['cv_'+sec.id];
+    h+=`<div class="section-card"><div class="section-head" onclick="tc('cv_${sec.id}')">
+      <div class="avatar ${sec.cls}">${sec.av}</div>
+      <span class="section-title">${sec.label}</span>
+      <span class="progress-pill">${items.length}</span>
+      <span class="chevron${col?'':' open'}">⌄</span>
+    </div>`;
+    if(!col){
+      h+=`<div class="item-list">`;
+      items.forEach(item=>{
+        const cCount=caravanCount(item);
+        const totalQ=qty(item);
+        h+=`<div class="counter-row">
+          <div class="counter-info">
+            <div class="counter-name">${esc(item.name)}</div>
+            <div class="counter-meta">${cCount>0?cCount+' of '+totalQ+' here':totalQ+' needed total'}${item.location?' · '+esc(item.location):''}</div>
+          </div>
+          <div>
+            <div class="counter-controls">
+              <button class="counter-btn minus" onclick="adjustCaravanCount('${item.id}',-1)">−</button>
+              <div class="counter-val${cCount>=totalQ?' complete':''}">${cCount}/${totalQ}</div>
+              <button class="counter-btn plus" onclick="adjustCaravanCount('${item.id}',1)">+</button>
+            </div>
+          </div>
+        </div>`;
+      });
+      h+=`</div>`;
+    }
+    h+=`</div>`;
+  });
+  return h;
+}
+
+function buildSetup(){
+  let h='';
+  SECTIONS.forEach(sec=>{
+    const items=state.items.filter(i=>i.section===sec.id);
+    const col=state.collapsed['s_'+sec.id];
+    const check=sec.type==='check';
+    h+=`<div class="section-card"><div class="section-head" onclick="tc('s_${sec.id}')">
+      <div class="avatar ${sec.cls}">${sec.av}</div>
+      <span class="section-title">${sec.label}</span>
+      <span class="progress-pill">${items.length} items</span>
+      <span class="chevron${col?'':' open'}">⌄</span>
+    </div>`;
+    if(!col){
+      items.forEach(item=>{
+        const atCar=isAtCaravan(item);
+        const isEditing=editingId===item.id;
+        h+=`<div class="setup-row">
+          <div class="setup-info">
+            <div class="setup-name">${esc(item.name)}</div>
+            <div class="setup-meta">${check?'Checklist task':`Min: ${item.min} · Per day: ${item.perDay}`}${item.location?' · '+esc(item.location):''}</div>
+          </div>`;
+        if(!check){
+          h+=`<div class="toggle-wrap" onclick="toggleCaravan('${item.id}')">
+            <div class="toggle">
+              <div class="toggle-track ${atCar?'caravan':'pack'}">
+                <span>PACK</span><span>VAN</span>
+              </div>
+              <div class="toggle-knob ${atCar?'caravan':'pack'}"></div>
+            </div>
+          </div>`;
+        }
+        h+=`<button class="edit-btn" onclick="startEdit('${item.id}')">${isEditing?'✕':'✎'}</button>
+          <button class="del-btn" onclick="di('${item.id}')">✕</button>
+        </div>`;
+        if(isEditing){
+          h+=`<div class="edit-panel">
+            <div class="add-row" style="margin-bottom:8px">
+              <input class="add-field" type="text" placeholder="Item name" id="e-name" value="${esc(item.name)}" style="margin-bottom:0">
+              <input class="add-field" type="text" placeholder="Location" id="e-loc" value="${esc(item.location)}" style="margin-bottom:0">
+            </div>
+            ${!check?`<div class="add-row3">
+              <input class="add-field" type="number" placeholder="Min qty" id="e-min" value="${item.min}" min="0" style="margin-bottom:0">
+              <input class="add-field" type="number" placeholder="Per day" id="e-pd" value="${item.perDay}" min="0" step="0.5" style="margin-bottom:0">
+              <input class="add-field" type="text" placeholder="Unit" id="e-unit" style="margin-bottom:0">
+            </div>`:''}
+            <div class="edit-actions">
+              <button class="save-btn" onclick="saveEdit('${item.id}')">Save</button>
+              <button class="cancel-btn" onclick="startEdit(null)">Cancel</button>
+            </div>
+          </div>`;
+        }
+      });
+      h+=`<div class="add-area">
+        <div class="add-row">
+          <input class="add-field" type="text" placeholder="Item name" id="n-${sec.id}" style="margin-bottom:0">
+          <input class="add-field" type="text" placeholder="Location" id="l-${sec.id}" style="margin-bottom:0">
+        </div>
+        ${!check?`<div class="add-row3" style="margin-top:8px">
+          <input class="add-field" type="number" placeholder="Min" min="0" id="m-${sec.id}" value="1" style="margin-bottom:0">
+          <input class="add-field" type="number" placeholder="Per day" min="0" step="0.5" id="p-${sec.id}" value="0" style="margin-bottom:0">
+          <input class="add-field" type="text" placeholder="Unit" id="u-${sec.id}" style="margin-bottom:0">
+        </div>`:''}
+        <button class="add-btn" onclick="ai('${sec.id}')" style="margin-top:8px">+ Add to ${sec.label}</button>
+      </div>`;
+    }
+    h+=`</div>`;
+  });
+  return h;
+}
+
+function adjustCount(id, delta){
+  const item=state.items.find(i=>i.id===id);
+  if(!item)return;
+  const needed=neededToPack(item);
+  const current=packedCount(item);
+  const next=Math.max(0,Math.min(needed,current+delta));
+  if(next===0) delete state.counts[id];
+  else state.counts[id]=next;
+  scheduleSave();
+  renderContent();
+}
+
+function adjustCaravanCount(id,delta){
+  const item=state.items.find(i=>i.id===id);
+  if(!item)return;
+  const total=qty(item);
+  const current=caravanCount(item);
+  const next=Math.max(0,Math.min(total,current+delta));
+  if(next===0)delete state.caravanCounts[id];
+  else state.caravanCounts[id]=next;
+  // Reset pack count if it now exceeds neededToPack
+  const needed=Math.max(0,total-next);
+  if((state.counts[id]||0)>needed) delete state.counts[id];
+  scheduleSave();renderContent();
+}
+
+function toggleCaravan(id){
+  if(state.atCaravan[id])delete state.atCaravan[id];
+  else state.atCaravan[id]=true;
+  scheduleSave();renderContent();
+}
+
+function tc(id){state.collapsed[id]=!state.collapsed[id];renderContent();}
+function tk(id,v){if(v)state.checked[id]=true;else delete state.checked[id];scheduleSave();renderContent();}
+function startEdit(id){editingId=(editingId===id)?null:id;renderContent();}
+
+function saveEdit(id){
+  const item=state.items.find(i=>i.id===id);
+  if(!item)return;
+  const n=document.getElementById('e-name');
+  const l=document.getElementById('e-loc');
+  const m=document.getElementById('e-min');
+  const p=document.getElementById('e-pd');
+  if(n)item.name=n.value.trim()||item.name;
+  if(l)item.location=l.value.trim();
+  if(m)item.min=Math.max(0,parseFloat(m.value)||0);
+  if(p)item.perDay=Math.max(0,parseFloat(p.value)||0);
+  editingId=null;
+  scheduleSave();renderContent();
+}
+
+function ai(sid){
+  const nEl=document.getElementById('n-'+sid);
+  if(!nEl||!nEl.value.trim())return;
+  const check=secType(sid)==='check';
+  const min=check?1:Math.max(0,parseFloat((document.getElementById('m-'+sid)||{}).value)||0);
+  const pd=check?0:Math.max(0,parseFloat((document.getElementById('p-'+sid)||{}).value)||0);
+  const loc=(document.getElementById('l-'+sid)||{}).value||'';
+  state.items.push({id:'i'+Date.now()+Math.random().toString(36).slice(2),section:sid,name:nEl.value.trim(),location:loc.trim(),min:Math.round(min),perDay:pd});
+  scheduleSave();renderContent();
+}
+
+function di(id){
+  if(!confirm('Remove this item?'))return;
+  state.items=state.items.filter(i=>i.id!==id);
+  delete state.checked[id];
+  delete state.counts[id];
+  delete state.atCaravan[id];
+  delete state.caravanCounts[id];
+  scheduleSave();renderContent();
+}
+
+function resetAll(){
+  if(!confirm('Clear all counts and checks for a fresh holiday?\n\nItems marked as "At Caravan" will stay as they are.'))return;
+  state.checked={};
+  state.counts={};
+  scheduleSave();renderContent();
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+init();
+</script>
+</body>
+</html>
